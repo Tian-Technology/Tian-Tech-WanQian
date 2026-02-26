@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WanQianX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="WanQianX.css">
+    <style>
+        /* 数学公式样式 */
+        .math-inline {
+            font-family: 'Cambria Math', 'STIX Two Text', 'Times New Roman', serif !important;
+            font-style: italic !important;
+            background: #f8fafc !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            border: 1px solid #e2e8f0 !important;
+            font-size: 14px !important;
+            line-height: 1.4 !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+        }
+        
+        .math-block {
+            font-family: 'Cambria Math', 'STIX Two Text', 'Times New Roman', serif !important;
+            font-style: italic !important;
+            background: #f8fafc !important;
+            padding: 16px !important;
+            border-radius: 8px !important;
+            border: 1px solid #e2e8f0 !important;
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+            text-align: center !important;
+            margin: 16px 0 !important;
+            display: block !important;
+        }
+        
+        /* 代码块样式 */
+        pre {
+            background: #0f172a !important;
+            color: #e2e8f0 !important;
+            padding: 16px !important;
+            margin: 0 !important;
+            overflow-x: auto !important;
+            font-family: 'Courier New', monospace !important;
+            font-size: 13px !important;
+            line-height: 1.4 !important;
+            border-radius: 4px !important;
+        }
+        
+        code {
+            background: #f1f5f9 !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            border: 1px solid #e2e8f0 !important;
+            font-family: 'Courier New', monospace !important;
+            font-size: 13px !important;
+            color: #374151 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">WanQianX</a>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+            <ul class="nav-menu">
+                <li><a href="../index.html">首页</a></li>
+                <li><a href="/index.html">TianTech首页</a></li>
+                <li><a href="WanQiandoc.html">版本日志</a></li>
+                <li><a href="#" onclick="location.reload(); return false;">新对话</a></li>
+            </ul>   
+        </div>
+    </nav>
+    
+    <!-- 移动端导航菜单 -->
+    <div class="mobile-nav-menu" id="mobile-nav-menu">
+        <div class="mobile-nav-header">
+            <span>菜单</span>
+            <button class="mobile-nav-close" onclick="toggleMobileMenu()">×</button>
+        </div>
+        <div class="mobile-nav-content">
+            <a href="../index.html" class="mobile-nav-item">首页</a>
+            <a href="/index.html" class="mobile-nav-item">TianTech首页</a>
+            <a href="WanQiandoc.html" class="mobile-nav-item">版本日志</a>
+            <a href="#" class="mobile-nav-item" onclick="location.reload(); toggleMobileMenu(); return false;">新对话</a>
+        </div>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-container">
+        <!-- 聊天容器 -->
+        <div class="chat-container">
+            <div class="chat-header">对话记录</div>
+            <div id="chat-history"></div>
+        </div>
+    </div>
+
+    <!-- 输入区域 -->
+    <div class="input-container">
+        <div class="model-selector">
+            <label>模型选择：</label>
+            <select id="model-select">
+                <option value="glm-z1-flash">WanQianX Ultra</option>
+                <option value="glm-z1-flash">WanQianX</option>
+                <option value="glm-4.5-flash">WanQianX Pro</option>
+            </select>
+        </div>
+        <div class="input-area">
+            <textarea id="user-input" placeholder="请输入您的问题..."></textarea>
+            <button onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+
+    <script>
+        // 增强的Markdown解析函数
+        function parseMarkdown(text) {
+            if (!text) return '';
+            
+            // 保存原始文本用于代码块处理
+            let result = text;
+            
+            // 1. 先处理数学公式块（避免被其他规则误处理）
+            const mathBlocks = [];
+            result = result.replace(/\$\$([\s\S]*?)\$\$/g, function(match, mathContent) {
+                const mathId = 'math-block-' + mathBlocks.length;
+                mathBlocks.push({
+                    id: mathId,
+                    content: mathContent.trim(),
+                    type: 'block'
+                });
+                return `{{${mathId}}}`;
+            });
+            
+            // 2. 处理行内数学公式
+            const inlineMaths = [];
+            result = result.replace(/\$([^$\n]+?)\$/g, function(match, mathContent) {
+                const mathId = 'inline-math-' + inlineMaths.length;
+                inlineMaths.push({
+                    id: mathId,
+                    content: mathContent.trim(),
+                    type: 'inline'
+                });
+                return `{{${mathId}}}`;
+            });
+            
+            // 3. 处理代码块（避免代码块内的内容被其他规则误处理）
+            const codeBlocks = [];
+            result = result.replace(/```([\s\S]*?)```/g, function(match, codeContent) {
+                const blockId = 'code-block-' + codeBlocks.length;
+                codeBlocks.push({
+                    id: blockId,
+                    content: codeContent,
+                    language: codeContent.split('\n')[0].trim() || 'text'
+                });
+                return `{{${blockId}}}`;
+            });
+            
+            // 4. 处理行内代码
+            const inlineCodes = [];
+            result = result.replace(/`([^`]+)`/g, function(match, codeContent) {
+                const codeId = 'inline-code-' + inlineCodes.length;
+                inlineCodes.push({
+                    id: codeId,
+                    content: codeContent
+                });
+                return `{{${codeId}}}`;
+            });
+            
+            // 3. 处理标题（支持ATX风格和Setext风格）
+            result = result.replace(/^###### (.+)$/gm, '<h6 style="margin: 12px 0 8px 0; font-size: 14px; font-weight: 600; color: #374151;">$1</h6>');
+            result = result.replace(/^##### (.+)$/gm, '<h5 style="margin: 14px 0 10px 0; font-size: 15px; font-weight: 600; color: #374151;">$1</h5>');
+            result = result.replace(/^#### (.+)$/gm, '<h4 style="margin: 16px 0 12px 0; font-size: 16px; font-weight: 600; color: #374151;">$1</h4>');
+            result = result.replace(/^### (.+)$/gm, '<h3 style="margin: 18px 0 14px 0; font-size: 17px; font-weight: 600; color: #1f2937;">$1</h3>');
+            result = result.replace(/^## (.+)$/gm, '<h2 style="margin: 20px 0 16px 0; font-size: 18px; font-weight: 600; color: #1f2937;">$1</h2>');
+            result = result.replace(/^# (.+)$/gm, '<h1 style="margin: 24px 0 18px 0; font-size: 20px; font-weight: 700; color: #1f2937;">$1</h1>');
+            
+            // 4. 处理粗体和斜体（支持嵌套）
+            result = result.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            result = result.replace(/\*\*(.*?)\*\*/g, '<strong style="font-weight: 600;">$1</strong>');
+            result = result.replace(/\*(.*?)\*/g, '<em style="font-style: italic;">$1</em>');
+            result = result.replace(/__(.*?)__/g, '<strong style="font-weight: 600;">$1</strong>');
+            result = result.replace(/_(.*?)_/g, '<em style="font-style: italic;">$1</em>');
+            
+            // 5. 处理删除线
+            result = result.replace(/~~(.*?)~~/g, '<del style="text-decoration: line-through; color: #6b7280;">$1</del>');
+            
+            // 6. 处理引用（支持多行和嵌套）
+            result = result.replace(/^> (.+)$/gm, '<blockquote style="border-left: 4px solid #3b82f6; margin: 12px 0; padding: 8px 16px; background: #f8fafc; border-radius: 4px; color: #4b5563;">$1</blockquote>');
+            
+            // 7. 处理无序列表（支持多种标记）
+            result = result.replace(/^(\*|\-|\+) (.+)$/gm, '<li style="margin: 4px 0; line-height: 1.5;">$2</li>');
+            result = result.replace(/(<li style="margin: 4px 0; line-height: 1.5;">.+<\/li>\s*)+/g, function(match) {
+                return '<ul style="margin: 12px 0; padding-left: 24px; line-height: 1.5; list-style-type: disc;">' + match + '</ul>';
+            });
+            
+            // 8. 处理有序列表
+            result = result.replace(/^(\d+)\. (.+)$/gm, '<li style="margin: 4px 0; line-height: 1.5;">$2</li>');
+            result = result.replace(/(<li style="margin: 4px 0; line-height: 1.5;">.+<\/li>\s*)+/g, function(match) {
+                return '<ol style="margin: 12px 0; padding-left: 24px; line-height: 1.5;">' + match + '</ol>';
+            });
+            
+            // 9. 处理任务列表
+            result = result.replace(/^- \[ \] (.+)$/gm, '<li style="margin: 4px 0; line-height: 1.5;"><input type="checkbox" disabled> $1</li>');
+            result = result.replace(/^- \[x\] (.+)$/gm, '<li style="margin: 4px 0; line-height: 1.5;"><input type="checkbox" checked disabled> $1</li>');
+            
+            // 10. 处理表格（基础支持）
+            result = result.replace(/\|(.+)\|\n\|[-:]+\|\n((?:\|.+\|\n)*)/g, function(match, header, rows) {
+                const headers = header.split('|').filter(h => h.trim()).map(h => `<th style="padding: 8px 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 600;">${h.trim()}</th>`).join('');
+                const rowLines = rows.split('\n').filter(r => r.trim()).map(row => {
+                    const cells = row.split('|').filter(c => c.trim()).map(c => `<td style="padding: 8px 12px; border: 1px solid #e2e8f0;">${c.trim()}</td>`).join('');
+                    return `<tr>${cells}</tr>`;
+                }).join('');
+                return `<table style="border-collapse: collapse; margin: 12px 0; width: 100%; border: 1px solid #e2e8f0;"><thead><tr>${headers}</tr></thead><tbody>${rowLines}</tbody></table>`;
+            });
+            
+            // 11. 处理链接
+            result = result.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: none; border-bottom: 1px solid #3b82f6;">$1</a>');
+            
+            // 12. 处理图片
+            result = result.replace(/!\[(.*?)\]\((.*?)\)/g, '<div style="margin: 12px 0;"><img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>');
+            
+            // 13. 处理水平分割线
+            result = result.replace(/^\s*([-*_]){3,}\s*$/gm, '<hr style="border: none; height: 1px; background: #e2e8f0; margin: 20px 0;">');
+            
+            // 14. 处理换行（两个空格或反斜杠换行）
+            result = result.replace(/  \n/g, '<br>');
+            result = result.replace(/\\\n/g, '<br>');
+            
+            // 15. 恢复行内数学公式（增强版）
+            inlineMaths.forEach(math => {
+                let processedMath = math.content;
+                
+                // 处理常见的数学符号
+                processedMath = processedMath
+                    .replace(/\\alpha/g, 'α')
+                    .replace(/\\beta/g, 'β')
+                    .replace(/\\gamma/g, 'γ')
+                    .replace(/\\delta/g, 'δ')
+                    .replace(/\\epsilon/g, 'ε')
+                    .replace(/\\zeta/g, 'ζ')
+                    .replace(/\\eta/g, 'η')
+                    .replace(/\\theta/g, 'θ')
+                    .replace(/\\iota/g, 'ι')
+                    .replace(/\\kappa/g, 'κ')
+                    .replace(/\\lambda/g, 'λ')
+                    .replace(/\\mu/g, 'μ')
+                    .replace(/\\nu/g, 'ν')
+                    .replace(/\\xi/g, 'ξ')
+                    .replace(/\\pi/g, 'π')
+                    .replace(/\\rho/g, 'ρ')
+                    .replace(/\\sigma/g, 'σ')
+                    .replace(/\\tau/g, 'τ')
+                    .replace(/\\upsilon/g, 'υ')
+                    .replace(/\\phi/g, 'φ')
+                    .replace(/\\chi/g, 'χ')
+                    .replace(/\\psi/g, 'ψ')
+                    .replace(/\\omega/g, 'ω')
+                    .replace(/\\infty/g, '∞')
+                    .replace(/\\sum/g, '∑')
+                    .replace(/\\prod/g, '∏')
+                    .replace(/\\int/g, '∫')
+                    .replace(/\\partial/g, '∂')
+                    .replace(/\\nabla/g, '∇')
+                    .replace(/\\times/g, '×')
+                    .replace(/\\div/g, '÷')
+                    .replace(/\\pm/g, '±')
+                    .replace(/\\mp/g, '∓')
+                    .replace(/\\cdot/g, '·')
+                    .replace(/\\leq/g, '≤')
+                    .replace(/\\geq/g, '≥')
+                    .replace(/\\neq/g, '≠')
+                    .replace(/\\approx/g, '≈')
+                    .replace(/\\equiv/g, '≡')
+                    .replace(/\\in/g, '∈')
+                    .replace(/\\notin/g, '∉')
+                    .replace(/\\subset/g, '⊂')
+                    .replace(/\\supset/g, '⊃')
+                    .replace(/\\cup/g, '∪')
+                    .replace(/\\cap/g, '∩')
+                    .replace(/\\forall/g, '∀')
+                    .replace(/\\exists/g, '∃')
+                    .replace(/\\sqrt/g, '√')
+                    .replace(/\\frac\s*{(.+?)}\s*{(.+?)}/g, '<span class="frac"><span class="top">$1</span><span class="bottom">$2</span></span>')
+                    .replace(/\\text\s*{(.+?)}/g, '$1');
+                
+                result = result.replace(
+                    `{{${math.id}}}`,
+                    `<span class="math-inline">${processedMath}</span>`
+                );
+            });
+            
+            // 16. 恢复数学公式块（增强版）
+            mathBlocks.forEach(math => {
+                let processedMath = math.content;
+                
+                // 处理常见的数学符号
+                processedMath = processedMath
+                    .replace(/\\alpha/g, 'α')
+                    .replace(/\\beta/g, 'β')
+                    .replace(/\\gamma/g, 'γ')
+                    .replace(/\\delta/g, 'δ')
+                    .replace(/\\epsilon/g, 'ε')
+                    .replace(/\\zeta/g, 'ζ')
+                    .replace(/\\eta/g, 'η')
+                    .replace(/\\theta/g, 'θ')
+                    .replace(/\\iota/g, 'ι')
+                    .replace(/\\kappa/g, 'κ')
+                    .replace(/\\lambda/g, 'λ')
+                    .replace(/\\mu/g, 'μ')
+                    .replace(/\\nu/g, 'ν')
+                    .replace(/\\xi/g, 'ξ')
+                    .replace(/\\pi/g, 'π')
+                    .replace(/\\rho/g, 'ρ')
+                    .replace(/\\sigma/g, 'σ')
+                    .replace(/\\tau/g, 'τ')
+                    .replace(/\\upsilon/g, 'υ')
+                    .replace(/\\phi/g, 'φ')
+                    .replace(/\\chi/g, 'χ')
+                    .replace(/\\psi/g, 'ψ')
+                    .replace(/\\omega/g, 'ω')
+                    .replace(/\\infty/g, '∞')
+                    .replace(/\\sum/g, '∑')
+                    .replace(/\\prod/g, '∏')
+                    .replace(/\\int/g, '∫')
+                    .replace(/\\partial/g, '∂')
+                    .replace(/\\nabla/g, '∇')
+                    .replace(/\\times/g, '×')
+                    .replace(/\\div/g, '÷')
+                    .replace(/\\pm/g, '±')
+                    .replace(/\\mp/g, '∓')
+                    .replace(/\\cdot/g, '·')
+                    .replace(/\\leq/g, '≤')
+                    .replace(/\\geq/g, '≥')
+                    .replace(/\\neq/g, '≠')
+                    .replace(/\\approx/g, '≈')
+                    .replace(/\\equiv/g, '≡')
+                    .replace(/\\in/g, '∈')
+                    .replace(/\\notin/g, '∉')
+                    .replace(/\\subset/g, '⊂')
+                    .replace(/\\supset/g, '⊃')
+                    .replace(/\\cup/g, '∪')
+                    .replace(/\\cap/g, '∩')
+                    .replace(/\\forall/g, '∀')
+                    .replace(/\\exists/g, '∃')
+                    .replace(/\\sqrt/g, '√')
+                    .replace(/\\frac\s*{(.+?)}\s*{(.+?)}/g, '<span class="frac"><span class="top">$1</span><span class="bottom">$2</span></span>')
+                    .replace(/\\text\s*{(.+?)}/g, '$1');
+                
+                result = result.replace(
+                    `{{${math.id}}}`,
+                    `<div class="math-block">${processedMath}</div>`
+                );
+            });
+            
+            // 17. 恢复行内代码
+            inlineCodes.forEach(code => {
+                result = result.replace(
+                    `{{${code.id}}}`,
+                    `<code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; font-family: 'Courier New', monospace; font-size: 13px; color: #374151;">${code.content}</code>`
+                );
+            });
+            
+            // 18. 恢复代码块
+            codeBlocks.forEach(block => {
+                const escapedContent = block.content
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+                
+                result = result.replace(
+                    `{{${block.id}}}`,
+                    `<div style="position: relative; margin: 16px 0; border-radius: 8px; overflow: hidden;">
+                        <div style="background: #1f2937; color: #f8fafc; padding: 8px 12px; font-size: 12px; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+                            <span>${block.language}</span>
+                            <button style="background: #3b82f6; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer;" onclick="copyCodeBlock(this)">复制代码</button>
+                        </div>
+                        <pre style="background: #0f172a; color: #e2e8f0; padding: 16px; margin: 0; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.4;"><code>${escapedContent}</code></pre>
+                    </div>`
+                );
+            });
+            
+            // 19. 处理段落（将连续文本包装成段落）
+            const lines = result.split('\n');
+            let processedLines = [];
+            let currentParagraph = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (!line) {
+                    // 空行，结束当前段落
+                    if (currentParagraph.length > 0) {
+                        processedLines.push(`<p style="margin: 8px 0; line-height: 1.6;">${currentParagraph.join(' ')}</p>`);
+                        currentParagraph = [];
+                    }
+                    processedLines.push('');
+                } else if (line.startsWith('<') && (line.includes('h1') || line.includes('h2') || line.includes('h3') || line.includes('h4') || line.includes('h5') || line.includes('h6') || line.includes('ul') || line.includes('ol') || line.includes('blockquote') || line.includes('table') || line.includes('hr') || line.includes('div') || line.includes('span class="math-inline"'))) {
+                    // 已经是HTML标签，直接添加
+                    if (currentParagraph.length > 0) {
+                        processedLines.push(`<p style="margin: 8px 0; line-height: 1.6;">${currentParagraph.join(' ')}</p>`);
+                        currentParagraph = [];
+                    }
+                    processedLines.push(line);
+                } else {
+                    currentParagraph.push(line);
+                }
+            }
+            
+            // 处理最后一个段落
+            if (currentParagraph.length > 0) {
+                processedLines.push(`<p style="margin: 8px 0; line-height: 1.6;">${currentParagraph.join(' ')}</p>`);
+            }
+            
+            result = processedLines.join('\n');
+            
+            return result;
+        }
+        
+        // 复制代码块函数
+        function copyCodeBlock(button) {
+            const codeBlock = button.parentElement.nextElementSibling;
+            const text = codeBlock.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '已复制';
+                button.style.background = '#10b981';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#3b82f6';
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                button.textContent = '复制失败';
+                button.style.background = '#ef4444';
+                setTimeout(() => {
+                    button.textContent = '复制代码';
+                    button.style.background = '#3b82f6';
+                }, 2000);
+            });
+        }
+        
+        // 移动端菜单切换
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-nav-menu');
+            menu.classList.toggle('active');
+        }
+
+        // 隐藏的API密钥
+        const API_KEY = "74f181dfaa934ce5911ffc49ada3563b.aivDJtSXxpLDybs1";
+        
+        // 当前对话的聊天历史
+        let chatHistory = [];
+        
+        // 添加消息到聊天记录
+        function addMessageToChat(role, content, isLoading = false, model = '') {
+            const chatHistory = document.getElementById('chat-history');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            
+            if (isLoading) {
+                // 生成唯一的消息ID
+                const messageId = 'loading-message-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                messageDiv.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+                messageDiv.id = messageId;
+            } else {
+                // 简单气泡显示消息
+                messageDiv.innerHTML = parseMarkdown(content);
+            }
+            
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            
+            return messageDiv.id;
+        }
+
+        // 滚动到底部的函数
+        function scrollToBottom() {
+            const chatHistory = document.getElementById('chat-history');
+            if (chatHistory) {
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+        }
+
+        // 更新消息内容
+        function updateMessageContent(elementId, newContent) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = parseMarkdown(newContent);
+                element.classList.remove('loading');
+                scrollToBottom();
+            }
+        }
+
+        // 完成消息显示
+        function completeMessage(elementId, content) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = parseMarkdown(content);
+                element.classList.remove('loading');
+                scrollToBottom();
+            }
+        }
+
+        // 发送消息
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            
+            if (!userInput.trim()) {
+                alert('请输入消息内容');
+                return;
+            }
+            
+            // 获取选中的模型
+            const selectedModel = document.getElementById('model-select').value;
+            
+            // 显示用户消息
+            addMessageToChat('user', userInput);
+            
+            // 将用户消息添加到聊天历史
+            chatHistory.push({ role: 'user', content: userInput });
+            
+            // 清空输入框
+            document.getElementById('user-input').value = '';
+            
+            // 显示加载状态并获取loadingId
+            const loadingId = addMessageToChat('ai', '正在生成回复...', true);
+            
+            try {
+                // 准备API请求数据
+                const requestData = {
+                    model: selectedModel,
+                    messages: chatHistory,
+                    stream: false
+                };
+                
+                // 调用ChatGLM API，使用流式传输
+                const response = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ...requestData,
+                        stream: true
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`请稍后再试 `);
+                }
+                
+                // 处理流式响应
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullResponse = '';
+                let thinkingContent = ''; // 思考过程内容
+                let finalAnswer = ''; // 最终答案内容
+                let isThinkingPhase = true; // 是否在思考阶段
+                
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        
+                        const chunk = decoder.decode(value);
+                        const lines = chunk.split('\n');
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                                try {
+                                    const data = JSON.parse(line.substring(6));
+                                    if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+                                        const content = data.choices[0].delta.content;
+                                        fullResponse += content;
+                                        
+                                        // 检测思考过程标记
+                                        if (content.includes('</think>')) {
+                                            isThinkingPhase = false;
+                                            // 立即分离思考过程和最终答案
+                                            const parts = fullResponse.split('</think>');
+                                            if (parts.length > 1) {
+                                                thinkingContent = parts[0].replace('<think>', '').trim();
+                                                finalAnswer = parts[1].trim();
+                                                // 切换到只显示最终答案
+                                                updateMessageContent(loadingId, finalAnswer);
+                                            }
+                                        } else if (content.includes('</think>')) {
+                                            isThinkingPhase = false;
+                                            // 立即分离思考过程和最终答案
+                                            const parts = fullResponse.split('</think>');
+                                            if (parts.length > 1) {
+                                                thinkingContent = parts[0].replace('<think>', '').trim();
+                                                finalAnswer = parts[1].trim();
+                                                // 切换到只显示最终答案
+                                                updateMessageContent(loadingId, finalAnswer);
+                                            }
+                                        } else if (isThinkingPhase) {
+                                            // 思考阶段：只显示思考过程（去掉<think>标记）
+                                            const currentThinking = fullResponse.replace('<think>', '').trim();
+                                            updateMessageContent(loadingId, currentThinking);
+                                        } else {
+                                            // 答案阶段：持续更新最终答案内容
+                                            const parts = fullResponse.split('</think>');
+                                            if (parts.length > 1) {
+                                                finalAnswer = parts[1].trim();
+                                            } else {
+                                                finalAnswer = fullResponse.replace('<think>', '').trim();
+                                            }
+                                            updateMessageContent(loadingId, finalAnswer);
+                                        }
+                                    }
+                                } catch (e) {
+                                    // 忽略JSON解析错误
+                                }
+                            }
+                        }
+                    }
+                } finally {
+                    reader.releaseLock();
+                }
+                
+                // 如果没有检测到</think>标记，使用完整响应作为最终答案
+                if (!finalAnswer) {
+                    finalAnswer = fullResponse.replace('<think>', '').trim();
+                } else {
+                    // 如果检测到了标记，确保最终答案是最新的
+                    const parts = fullResponse.split('</think>');
+                    if (parts.length > 1) {
+                        finalAnswer = parts[1].trim();
+                    } else {
+                        finalAnswer = fullResponse.replace('<think>', '').trim();
+                    }
+                }
+                
+                // 确保思考内容正确提取
+                if (isThinkingPhase) {
+                    thinkingContent = fullResponse.replace('<think>', '').trim();
+                } else {
+                    // 如果不在思考阶段，确保思考内容正确
+                    const parts = fullResponse.split('</think>');
+                    if (parts.length > 1) {
+                        thinkingContent = parts[0].replace('<think>', '').trim();
+                    } else {
+                        const parts2 = fullResponse.split('</think>');
+                        if (parts2.length > 1) {
+                            thinkingContent = parts2[0].replace('<think>', '').trim();
+                        }
+                    }
+                }
+                
+                // 将最终答案添加到聊天历史
+                chatHistory.push({ role: 'assistant', content: finalAnswer });
+                
+                // 完成消息显示
+                completeMessage(loadingId, finalAnswer);
+
+            } catch (error) {
+                console.error('Error:', error);
+                updateMessageContent(loadingId, `服务器繁忙中，${error.message}`);
+            }
+        }
+
+        // 回车键发送消息
+        document.getElementById('user-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 输入框自动调整高度
+        function autoResizeTextarea() {
+            const textarea = document.getElementById('user-input');
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+        }
+
+        // 监听输入框输入事件，自动调整高度
+        document.getElementById('user-input').addEventListener('input', autoResizeTextarea);
+
+        // 监听输入框聚焦事件，初始调整高度
+        document.getElementById('user-input').addEventListener('focus', autoResizeTextarea);
+
+        // 监听输入框粘贴事件，自动调整高度
+        document.getElementById('user-input').addEventListener('paste', function() {
+            setTimeout(autoResizeTextarea, 10);
+        });
+
+        // 初始化欢迎消息
+        window.onload = function() {
+            addMessageToChat('ai', '你好！我是WanQianX，有什么可以帮助你的吗？');
+        };
+    </script>
+</body>
+</html>

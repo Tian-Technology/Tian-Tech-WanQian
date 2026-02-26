@@ -1,0 +1,2917 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WanQianCora</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 简洁的豆包风格样式 */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+            color: #1f2937;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* 简洁的导航栏 */
+        .navbar {
+            background: #ffffff;
+            padding: 12px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .nav-logo {
+            color: #1f2937;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 20px;
+        }
+        
+        .nav-menu li a {
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .nav-menu li a:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        /* 主内容区域 */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 60px);
+            position: relative;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+        
+        /* 侧栏 */
+        .sidebar {
+            width: 250px;
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            left: 0;
+            top: 60px;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            padding: 12px 0;
+            overflow-y: auto;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-item:hover {
+            background: #f1f5f9;
+            color: #374151;
+        }
+        
+        .sidebar-item.active {
+            background: #e0f2fe;
+            color: #0369a1;
+            border-left-color: #0ea5e9;
+        }
+        
+        .sidebar-icon {
+            margin-right: 12px;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* 聊天容器 */
+        .chat-container {
+            background: #ffffff;
+            position: relative;
+            max-width: none;
+            margin: 0;
+            width: 100%;
+            height: calc(100vh - 180px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* 对话记录标题 */
+        .chat-header {
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        /* 消息样式 */
+        #chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            min-height: 0;
+            height: 100%;
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            word-wrap: break-word;
+        }
+        
+        /* 数学公式样式 */
+        .math-inline {
+            font-family: 'Cambria Math', 'STIX Two Text', 'Times New Roman', serif !important;
+            font-style: italic !important;
+            background: #f8fafc !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            border: 1px solid #e2e8f0 !important;
+            font-size: 14px !important;
+            line-height: 1.4 !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+        }
+        
+        .math-block {
+            font-family: 'Cambria Math', 'STIX Two Text', 'Times New Roman', serif !important;
+            font-style: italic !important;
+            background: #f8fafc !important;
+            padding: 16px !important;
+            border-radius: 8px !important;
+            border: 1px solid #e2e8f0 !important;
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+            text-align: center !important;
+            margin: 16px 0 !important;
+            display: block !important;
+        }
+        
+        /* 数学符号特殊样式 */
+        .math-inline sup, .math-block sup {
+            font-size: 0.8em !important;
+            vertical-align: super !important;
+        }
+        
+        .math-inline sub, .math-block sub {
+            font-size: 0.8em !important;
+            vertical-align: sub !important;
+        }
+        
+        .math-inline .frac, .math-block .frac {
+            display: inline-block !important;
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+        
+        .math-inline .frac > span, .math-block .frac > span {
+            display: block !important;
+            font-size: 0.8em !important;
+        }
+        
+        .math-inline .frac .top, .math-block .frac .top {
+            border-bottom: 1px solid #374151 !important;
+            padding-bottom: 1px !important;
+        }
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 85%;
+            animation: fadeInUp 0.3s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(10px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+        
+        .user-message {
+            background: #3b82f6;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .ai-message {
+            background: #f8fafc;
+            color: #1f2937;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 4px;
+        }
+        
+        /* 输入区域 */
+        .input-container {
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            padding: 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: none;
+            margin: 0;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 250px;
+            right: 0;
+            z-index: 99;
+            box-sizing: border-box;
+            height: auto;
+            min-height: 120px;
+        }
+        
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .model-selector label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .model-selector select {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: #ffffff;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .model-selector select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .input-area {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        textarea {
+            flex: 1;
+            height: 60px;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            resize: none;
+            font-size: 14px;
+            line-height: 1.5;
+            transition: all 0.2s ease;
+            background: #ffffff;
+            color: #1f2937;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        textarea::placeholder {
+            color: #9ca3af;
+        }
+        
+        button {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            height: 44px;
+            min-width: 80px;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .loading {
+            color: #6b7280;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            background: #6b7280;
+            border-radius: 50%;
+            animation: loading 1.4s ease-in-out infinite both;
+        }
+        
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        
+        @keyframes loading {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+        
+        /* 多页面布局样式 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+        
+        .content-section {
+            display: none;
+            flex: 1;
+            height: 100%;
+            overflow-y: auto;
+            padding: 0;
+        }
+        
+        .content-section.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .page-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .page-container h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #1f2937;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 10px;
+        }
+        
+        .page-container h3 {
+            font-size: 18px;
+            margin: 15px 0 10px 0;
+            color: #374151;
+        }
+        
+        .page-container p {
+            margin: 8px 0;
+            line-height: 1.6;
+            color: #6b7280;
+        }
+        
+        /* 设置页面样式 */
+        .settings-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .setting-item label {
+            font-weight: 500;
+            min-width: 80px;
+            color: #374151;
+        }
+        
+        .setting-item select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            font-size: 14px;
+        }
+        
+        /* 帮助文档样式 */
+        .help-content {
+            line-height: 1.8;
+        }
+        
+        .help-content h3 {
+            color: #3b82f6;
+            margin-top: 20px;
+        }
+        
+        /* 搜索页面样式 */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .search-bar button {
+            padding: 10px 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        /* 对话历史样式 */
+        .history-list {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        /* 输入区域隐藏类 */
+        .input-container.hidden {
+            display: none;
+        }
+
+        /* 简化的思考过程样式 */
+        .thinking-process {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        
+        .thinking-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .thinking-icon {
+            font-size: 16px;
+            background: #64748b;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .thinking-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            flex: 1;
+            margin-left: 8px;
+        }
+        
+        .thinking-model {
+            font-size: 12px;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        
+        .thinking-content {
+            margin-bottom: 12px;
+        }
+        
+        .thinking-status {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        
+        .thinking-realtime {
+            font-size: 13px;
+            color: #374151;
+            background: #ffffff;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border-left: 2px solid #64748b;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            min-height: 40px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .thinking-animation {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .thinking-step {
+            font-size: 12px;
+            color: #64748b;
+            padding: 4px 6px;
+            background: #f8fafc;
+            border-radius: 3px;
+            border-left: 2px solid #94a3b8;
+        }
+        
+        .thinking-progress {
+            margin-top: 8px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #64748b;
+            border-radius: 2px;
+            width: 60%;
+        }
+        
+        .progress-text {
+            font-size: 11px;
+            color: #64748b;
+            text-align: center;
+        }
+        
+        /* 折叠/展开样式 */
+        .thinking-process.completed {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        
+        .thinking-process.completed .thinking-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .thinking-toggle {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .thinking-process.completed .thinking-content {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            /* 基础布局调整 */
+            body {
+                font-size: 14px;
+                height: 100vh;
+                overflow: hidden;
+            }
+            
+            .main-container {
+                flex-direction: column;
+                height: 100vh;
+                margin-left: 0;
+                width: 100%;
+                position: relative;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 60px;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                bottom: auto;
+                z-index: 1000;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+                display: flex;
+                flex-direction: row;
+                overflow-x: auto;
+                overflow-y: hidden;
+                background: #ffffff;
+            }
+            
+            .main-content {
+                margin-top: 60px;
+                height: calc(100vh - 60px);
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .chat-container {
+                height: calc(100vh - 60px);
+                width: 100%;
+                margin-left: 0;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            #chat-history {
+                height: 100%;
+                overflow-y: auto;
+                padding-bottom: 160px;
+                box-sizing: border-box;
+            }
+            
+            .sidebar-header {
+                display: none;
+            }
+            
+            .sidebar-content {
+                display: flex;
+                flex-direction: row;
+                padding: 0;
+                width: 100%;
+            }
+            
+            .sidebar-item {
+                flex: 1;
+                min-width: 80px;
+                padding: 8px 4px;
+                border-left: none;
+                border-top: 3px solid transparent;
+                flex-direction: column;
+                text-align: center;
+                font-size: 12px;
+            }
+            
+            .sidebar-item.active {
+                border-left-color: transparent;
+                border-top-color: #0ea5e9;
+            }
+            
+            .sidebar-icon {
+                margin-right: 0;
+                margin-bottom: 4px;
+                font-size: 14px;
+            }
+            
+            .input-container {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                padding: 12px 12px 0 12px;
+                background: #ffffff;
+                border-top: 1px solid #e5e7eb;
+                z-index: 999;
+                height: auto;
+                min-height: 160px;
+                box-sizing: border-box;
+                width: 100%;
+                margin: 0;
+            }
+            
+            /* 导航栏调整 */
+            .navbar {
+                padding: 8px 12px;
+            }
+            
+            .nav-logo {
+                font-size: 16px;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            /* 移动端汉堡菜单 */
+            .mobile-menu-btn {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 20px;
+                color: #374151;
+                cursor: pointer;
+                padding: 4px;
+            }
+            
+            .mobile-nav-menu {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 80%;
+                height: 100vh;
+                background: #ffffff;
+                z-index: 2000;
+                transition: left 0.3s ease;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+            
+            .mobile-nav-menu.active {
+                left: 0;
+            }
+            
+            .mobile-nav-header {
+                padding: 16px;
+                border-bottom: 1px solid #e2e8f0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .mobile-nav-close {
+                background: none;
+                border: none;
+                font-size: 20px;
+                cursor: pointer;
+                color: #64748b;
+            }
+            
+            .mobile-nav-content {
+                padding: 16px;
+            }
+            
+            .mobile-nav-item {
+                display: block;
+                padding: 12px 0;
+                color: #374151;
+                text-decoration: none;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            
+            /* 消息样式调整 */
+            .message {
+                max-width: 92%;
+                padding: 12px 16px;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+            
+            #chat-history {
+                padding: 16px;
+            }
+            
+            /* 输入区域调整 */
+            .input-area {
+                flex-direction: column;
+                gap: 8px;
+                height: auto;
+                min-height: 100px;
+                width: 100%;
+            }
+            
+            .model-selector {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                width: 100%;
+            }
+            
+            .model-selector label {
+                font-size: 14px;
+                min-width: auto;
+            }
+            
+            .model-selector select {
+                flex: 1;
+                min-width: auto;
+                font-size: 14px;
+                padding: 6px 8px;
+                width: 100%;
+            }
+            
+            textarea {
+                height: 60px;
+                font-size: 16px; /* 防止iOS缩放 */
+                min-height: 60px;
+                max-height: 120px;
+                box-sizing: border-box;
+                width: 100%;
+                margin: 0;
+            }
+            
+            button {
+                width: 100%;
+                height: 44px;
+                font-size: 16px;
+                box-sizing: border-box;
+                margin: 0;
+            }
+            
+            /* 设置页面调整 */
+            .settings-content {
+                padding: 16px;
+            }
+            
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .setting-item label {
+                min-width: auto;
+            }
+            
+            /* 页面容器调整 */
+            .page-container {
+                padding: 16px;
+            }
+            
+            .page-container h2 {
+                font-size: 20px;
+            }
+            
+            /* 深色主题移动端适配 */
+            body.dark-theme .sidebar {
+                border-top: 1px solid #334155;
+            }
+            
+            body.dark-theme .mobile-nav-menu {
+                background: #1e293b;
+            }
+            
+            body.dark-theme .mobile-nav-header {
+                border-bottom: 1px solid #334155;
+            }
+            
+            body.dark-theme .mobile-nav-item {
+                color: #e2e8f0;
+                border-bottom: 1px solid #334155;
+            }
+        }
+
+        /* 深色主题样式 */
+        body.dark-theme {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        
+        body.dark-theme .navbar {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+        
+        body.dark-theme .nav-logo {
+            color: #e2e8f0;
+        }
+        
+        body.dark-theme .nav-menu li a {
+            color: #94a3b8;
+        }
+        
+        body.dark-theme .nav-menu li a:hover {
+            background: #334155;
+            color: #e2e8f0;
+        }
+        
+        body.dark-theme .sidebar {
+            background: #1e293b;
+            border-right: 1px solid #334155;
+        }
+        
+        body.dark-theme .sidebar-header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+        
+        body.dark-theme .sidebar-header h3 {
+            color: #e2e8f0;
+        }
+        
+        body.dark-theme .sidebar-item {
+            color: #94a3b8;
+        }
+        
+        body.dark-theme .sidebar-item:hover {
+            background: #334155;
+            color: #e2e8f0;
+        }
+        
+        body.dark-theme .sidebar-item.active {
+            background: #334155;
+            color: #60a5fa;
+            border-left-color: #60a5fa;
+        }
+        
+        body.dark-theme .chat-container {
+            background: #0f172a;
+        }
+        
+        body.dark-theme .chat-header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            color: #94a3b8;
+        }
+        
+        body.dark-theme #chat-history {
+            background: #0f172a;
+        }
+        
+        body.dark-theme .ai-message {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+        }
+        
+        body.dark-theme .user-message {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        body.dark-theme .input-container {
+            background: #1e293b;
+            border-top: 1px solid #334155;
+        }
+        
+        body.dark-theme textarea {
+            background: #334155;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+        }
+        
+        body.dark-theme textarea:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+        
+        body.dark-theme textarea::placeholder {
+            color: #64748b;
+        }
+        
+        body.dark-theme .model-selector label {
+            color: #94a3b8;
+        }
+        
+        body.dark-theme .model-selector select {
+            background: #334155;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+        }
+        
+        body.dark-theme .page-container {
+            background: #0f172a;
+        }
+        
+        body.dark-theme .page-container h2 {
+            color: #e2e8f0;
+            border-bottom: 2px solid #60a5fa;
+        }
+        
+        body.dark-theme .page-container h3 {
+            color: #cbd5e1;
+        }
+        
+        body.dark-theme .page-container p {
+            color: #94a3b8;
+        }
+        
+        body.dark-theme .settings-content {
+            background: #0f172a;
+        }
+        
+        body.dark-theme .setting-item {
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+        
+        body.dark-theme .setting-item label {
+            color: #e2e8f0;
+        }
+        
+        body.dark-theme .setting-item select {
+            background: #334155;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+        }
+        
+        body.dark-theme .setting-item input {
+            background: #334155;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+        }
+        
+        body.dark-theme .setting-item button {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        /* 字体大小样式 */
+        body.font-small {
+            font-size: 12px;
+        }
+        
+        body.font-medium {
+            font-size: 14px;
+        }
+        
+        body.font-large {
+            font-size: 16px;
+        }
+        
+        /* 消息动画禁用样式 */
+        .no-animation .message {
+            animation: none !important;
+        }
+        
+        /* 思考过程隐藏样式 */
+        .hide-thinking .thinking-process {
+            display: none !important;
+        }
+        
+        body.dark-theme .history-list {
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+        
+        body.dark-theme .thinking-process {
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+        
+        body.dark-theme .thinking-header {
+            border-bottom: 1px solid #334155;
+        }
+        
+        body.dark-theme .thinking-title {
+            color: #e2e8f0;
+        }
+        
+        body.dark-theme .thinking-model {
+            background: #334155;
+            color: #94a3b8;
+        }
+        
+        body.dark-theme .thinking-status {
+            color: #94a3b8;
+        }
+        
+        body.dark-theme .thinking-realtime {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-left: 2px solid #64748b;
+        }
+        
+        body.dark-theme .thinking-step {
+            color: #94a3b8;
+            background: #1e293b;
+            border-left: 2px solid #475569;
+        }
+        
+        body.dark-theme .progress-bar {
+            background: #334155;
+        }
+        
+        body.dark-theme .progress-fill {
+            background: #60a5fa;
+        }
+        
+        body.dark-theme .progress-text {
+            color: #94a3b8;
+        }
+        
+        body.dark-theme .thinking-original {
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+        
+        body.dark-theme .thinking-final {
+            color: #e2e8f0;
+        }
+        
+        body.dark-theme .final-answer {
+            color: #e2e8f0;
+        }
+
+
+            
+            /* 深色主题移动端适配 */
+            body.dark-theme .sidebar {
+                border-top: 1px solid #334155;
+            }
+            
+            body.dark-theme .mobile-nav-menu {
+                background: #1e293b;
+            }
+            
+            body.dark-theme .mobile-nav-header {
+                border-bottom: 1px solid #334155;
+            }
+            
+            body.dark-theme .mobile-nav-item {
+                color: #e2e8f0;
+                border-bottom: 1px solid #334155;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .sidebar-item {
+                min-width: 70px;
+                font-size: 11px;
+                padding: 6px 2px;
+            }
+            
+            .sidebar-icon {
+                font-size: 12px;
+            }
+            
+            .message {
+                max-width: 95%;
+                padding: 10px 12px;
+            }
+            
+            #chat-history {
+                padding: 12px;
+            }
+            
+            .input-container {
+                padding: 8px;
+            }
+            
+            .settings-content {
+                padding: 12px;
+            }
+            
+            .page-container {
+                padding: 12px;
+            }
+            
+            .nav-logo {
+                font-size: 14px;
+            }
+            
+            .mobile-menu-btn {
+                font-size: 18px;
+            }
+            
+            textarea {
+                height: 45px;
+                font-size: 16px;
+            }
+            
+            button {
+                height: 40px;
+                font-size: 15px;
+            }
+        }
+        
+        /* 移动端菜单按钮样式 */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #374151;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .mobile-menu-btn:hover {
+            background-color: #f3f4f6;
+        }
+        
+        body.dark-theme .mobile-menu-btn {
+            color: #e5e7eb;
+        }
+        
+        body.dark-theme .mobile-menu-btn:hover {
+            background-color: #374151;
+        }
+        
+        /* 移动端导航菜单样式 */
+        .mobile-nav-menu {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 280px;
+            height: 100%;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mobile-nav-menu.active {
+            left: 0;
+        }
+        
+        .mobile-nav-header {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+        
+        .mobile-nav-header span {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .mobile-nav-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .mobile-nav-close:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .mobile-nav-content {
+            flex: 1;
+            padding: 8px 0;
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-item {
+            display: block;
+            padding: 12px 16px;
+            color: #374151;
+            text-decoration: none;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s;
+        }
+        
+        .mobile-nav-item:hover {
+            background-color: #f8fafc;
+        }
+        
+        body.dark-theme .mobile-nav-menu {
+            background: #1e293b;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.dark-theme .mobile-nav-header {
+            border-bottom: 1px solid #334155;
+            background: #0f172a;
+        }
+        
+        body.dark-theme .mobile-nav-header span {
+            color: #e2e8f0;
+        }
+        
+        body.dark-theme .mobile-nav-close {
+            color: #94a3b8;
+        }
+        
+        body.dark-theme .mobile-nav-close:hover {
+            background-color: #334155;
+        }
+        
+        body.dark-theme .mobile-nav-item {
+            color: #e2e8f0;
+            border-bottom: 1px solid #334155;
+        }
+        
+        body.dark-theme .mobile-nav-item:hover {
+            background-color: #334155;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">WanQianCora</a>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+            <ul class="nav-menu">
+                <li><a href="WanQian/index.html">首页</a></li>
+                <li><a href="/index.html">TianTech首页</a></li>
+                <li><a href="WanQian/WanQiandoc.html">版本日志</a></li>
+                <li><a href="#" onclick="location.reload(); return false;">新对话</a></li>
+            </ul>   
+        </div>
+    </nav>
+    
+    <!-- 移动端导航菜单 -->
+    <div class="mobile-nav-menu" id="mobile-nav-menu">
+        <div class="mobile-nav-header">
+            <span>菜单</span>
+            <button class="mobile-nav-close" onclick="toggleMobileMenu()">×</button>
+        </div>
+        <div class="mobile-nav-content">
+            <a href="index.html" class="mobile-nav-item">首页</a>
+            <a href="/index.html" class="mobile-nav-item">TianTech首页</a>
+            <a href="WanQiandoc.html" class="mobile-nav-item">版本日志</a>
+            <a href="#" class="mobile-nav-item" onclick="location.reload(); toggleMobileMenu(); return false;">新对话</a>
+        </div>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-container">
+        <!-- 侧栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>功能菜单</h3>
+            </div>
+            <div class="sidebar-content">
+                <div class="sidebar-item active">
+                    <span class="sidebar-icon">💬</span>
+                    <span>当前对话</span>
+                </div>
+                <div class="sidebar-item">
+                    <span class="sidebar-icon">📁</span>
+                    <span>对话历史</span>
+                </div>
+                <div class="sidebar-item">
+                    <span class="sidebar-icon">⚙️</span>
+                    <span>设置</span>
+                </div>
+                <div class="sidebar-item">
+                    <span class="sidebar-icon">📚</span>
+                    <span>帮助文档</span>
+                </div>
+                <div class="sidebar-item">
+                    <span class="sidebar-icon">🔍</span>
+                    <span>搜索</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 当前对话页面 -->
+            <div id="current-chat" class="content-section active">
+                <div class="chat-container">
+                    <div class="chat-header">对话记录</div>
+                    <div id="chat-history"></div>
+                </div>
+            </div>
+            
+            <!-- 对话历史页面 -->
+            <div id="chat-history-page" class="content-section">
+                <div class="page-container">
+                    <h2>对话历史</h2>
+                    <div class="history-list">
+                        <p>对话历史功能正在开发中...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 设置页面 -->
+            <div id="settings-page" class="content-section">
+                <div class="page-container">
+                    <h2>设置</h2>
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <label>模型选择：</label>
+                            <select id="settings-model-select">
+                                <option value="glm-z1-flash">WanQianCora Ultra</option>
+                                <option value="glm-z1-flash">WanQianCora</option>
+                                <option value="glm-4.5-flash">WanQianCora Pro</option>
+                                <option value="glm-4v-flash">WanQianCora Intelligent</option>
+                                <option value="glm-4-flash-250414">WanQianCora mini</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>主题：</label>
+                            <select id="theme-select">
+                                <option value="light">浅色主题</option>
+                                <option value="dark">深色主题</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>字体大小：</label>
+                            <select id="font-size-select">
+                                <option value="small">小</option>
+                                <option value="medium" selected>中</option>
+                                <option value="large">大</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>自动保存：</label>
+                            <select id="auto-save-select">
+                                <option value="enabled">启用</option>
+                                <option value="disabled">禁用</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>显示思考过程：</label>
+                            <select id="show-thinking-select">
+                                <option value="enabled">显示</option>
+                                <option value="disabled">隐藏</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>消息动画：</label>
+                            <select id="message-animation-select">
+                                <option value="enabled">启用</option>
+                                <option value="disabled">禁用</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>API密钥：</label>
+                            <input type="password" id="api-key-input" placeholder="输入API密钥" style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; width: 200px;">
+                        </div>
+                        <div class="setting-item">
+                            <label>API端点：</label>
+                            <input type="text" id="api-endpoint-input" placeholder="https://api.example.com" style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; width: 200px;">
+                        </div>
+                        <div class="setting-item">
+                            <label>最大上下文长度：</label>
+                            <input type="number" id="max-context-input" value="4000" min="1000" max="16000" style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; width: 100px;">
+                        </div>
+                        <div class="setting-item">
+                            <label>温度设置：</label>
+                            <input type="range" id="temperature-slider" min="0" max="1" step="0.1" value="0.7" style="width: 150px;">
+                            <span id="temperature-value">0.7</span>
+                        </div>
+                        <div class="setting-item">
+                            <button onclick="exportSettings()" style="background: #10b981; margin-right: 10px;">导出设置</button>
+                            <button onclick="importSettings()" style="background: #3b82f6;">导入设置</button>
+                            <button onclick="resetSettings()" style="background: #ef4444; margin-left: 10px;">重置设置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 帮助文档页面 -->
+            <div id="help-page" class="content-section">
+                <div class="page-container">
+                    <h2>帮助文档</h2>
+                    <div class="help-content">
+                        <h3>使用说明</h3>
+                        <p>1. 在输入框中输入您的问题</p>
+                        <p>2. 点击发送按钮或按Enter键发送消息</p>
+                        <p>3. 模型会显示思考过程并提供最终答案</p>
+                        <h3>功能说明</h3>
+                        <p>• 支持多轮对话</p>
+                        <p>• 显示详细的思考过程</p>
+                        <p>• 支持代码复制功能</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 搜索页面 -->
+            <div id="search-page" class="content-section">
+                <div class="page-container">
+                    <h2>搜索</h2>
+                    <div class="search-content">
+                        <div class="search-bar">
+                            <input type="text" placeholder="搜索对话内容..." id="search-input">
+                            <button onclick="performSearch()">搜索</button>
+                        </div>
+                        <div class="search-results">
+                            <p>搜索功能正在开发中...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 输入区域 -->
+        <div class="input-container">
+            <div class="model-selector">
+                <label for="model-select">模型：</label>
+                <select id="model-select">
+                    <option value="glm-z1-flash">WanQianCora Ultra</option>
+                    <option value="glm-z1-flash">WanQianCora</option>
+                    <option value="glm-4.5-flash">WanQianCora Pro</option>
+                    <option value="glm-4v-flash">WanQianCora Intelligent</option>
+                    <option value="glm-4-flash-250414">WanQianCora mini</option>
+                </select>
+            </div>
+            <div class="input-area">
+                <textarea id="user-input" placeholder="请输入您要发送给WanQianCora大模型的消息..."></textarea>
+                <button onclick="sendMessage()">发送</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 增强的Markdown解析函数
+        function parseMarkdown(text) {
+            if (!text) return '';
+            
+            // 保存原始文本用于代码块处理
+            let result = text;
+            
+            // 1. 先处理数学公式块（避免被其他规则误处理）
+            const mathBlocks = [];
+            result = result.replace(/\$\$([\s\S]*?)\$\$/g, function(match, mathContent) {
+                const mathId = 'math-block-' + mathBlocks.length;
+                mathBlocks.push({
+                    id: mathId,
+                    content: mathContent.trim(),
+                    type: 'block'
+                });
+                return `{{${mathId}}}`;
+            });
+            
+            // 2. 处理行内数学公式
+            const inlineMaths = [];
+            result = result.replace(/\$([^$\n]+?)\$/g, function(match, mathContent) {
+                const mathId = 'inline-math-' + inlineMaths.length;
+                inlineMaths.push({
+                    id: mathId,
+                    content: mathContent.trim(),
+                    type: 'inline'
+                });
+                return `{{${mathId}}}`;
+            });
+            
+            // 3. 处理代码块（避免代码块内的内容被其他规则误处理）
+            const codeBlocks = [];
+            result = result.replace(/```([\s\S]*?)```/g, function(match, codeContent) {
+                const blockId = 'code-block-' + codeBlocks.length;
+                codeBlocks.push({
+                    id: blockId,
+                    content: codeContent,
+                    language: codeContent.split('\n')[0].trim() || 'text'
+                });
+                return `{{${blockId}}}`;
+            });
+            
+            // 4. 处理行内代码
+            const inlineCodes = [];
+            result = result.replace(/`([^`]+)`/g, function(match, codeContent) {
+                const codeId = 'inline-code-' + inlineCodes.length;
+                inlineCodes.push({
+                    id: codeId,
+                    content: codeContent
+                });
+                return `{{${codeId}}}`;
+            });
+            
+            // 3. 处理标题（支持ATX风格和Setext风格）
+            result = result.replace(/^###### (.+)$/gm, '<h6 style="margin: 12px 0 8px 0; font-size: 14px; font-weight: 600; color: #374151;">$1</h6>');
+            result = result.replace(/^##### (.+)$/gm, '<h5 style="margin: 14px 0 10px 0; font-size: 15px; font-weight: 600; color: #374151;">$1</h5>');
+            result = result.replace(/^#### (.+)$/gm, '<h4 style="margin: 16px 0 12px 0; font-size: 16px; font-weight: 600; color: #374151;">$1</h4>');
+            result = result.replace(/^### (.+)$/gm, '<h3 style="margin: 18px 0 14px 0; font-size: 17px; font-weight: 600; color: #1f2937;">$1</h3>');
+            result = result.replace(/^## (.+)$/gm, '<h2 style="margin: 20px 0 16px 0; font-size: 18px; font-weight: 600; color: #1f2937;">$1</h2>');
+            result = result.replace(/^# (.+)$/gm, '<h1 style="margin: 24px 0 18px 0; font-size: 20px; font-weight: 700; color: #1f2937;">$1</h1>');
+            
+            // 4. 处理粗体和斜体（支持嵌套）
+            result = result.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            result = result.replace(/\*\*(.*?)\*\*/g, '<strong style="font-weight: 600;">$1</strong>');
+            result = result.replace(/\*(.*?)\*/g, '<em style="font-style: italic;">$1</em>');
+            result = result.replace(/__(.*?)__/g, '<strong style="font-weight: 600;">$1</strong>');
+            result = result.replace(/_(.*?)_/g, '<em style="font-style: italic;">$1</em>');
+            
+            // 5. 处理删除线
+            result = result.replace(/~~(.*?)~~/g, '<del style="text-decoration: line-through; color: #6b7280;">$1</del>');
+            
+            // 6. 处理引用（支持多行和嵌套）
+            result = result.replace(/^> (.+)$/gm, '<blockquote style="border-left: 4px solid #3b82f6; margin: 12px 0; padding: 8px 16px; background: #f8fafc; border-radius: 4px; color: #4b5563;">$1</blockquote>');
+            
+            // 7. 处理无序列表（支持多种标记）
+            result = result.replace(/^(\*|\-|\+) (.+)$/gm, '<li style="margin: 4px 0; line-height: 1.5;">$2</li>');
+            result = result.replace(/(<li style="margin: 4px 0; line-height: 1.5;">.+<\/li>\s*)+/g, function(match) {
+                return '<ul style="margin: 12px 0; padding-left: 24px; line-height: 1.5; list-style-type: disc;">' + match + '</ul>';
+            });
+            
+            // 8. 处理有序列表
+            result = result.replace(/^(\d+)\. (.+)$/gm, '<li style="margin: 4px 0; line-height: 1.5;">$2</li>');
+            result = result.replace(/(<li style="margin: 4px 0; line-height: 1.5;">.+<\/li>\s*)+/g, function(match) {
+                return '<ol style="margin: 12px 0; padding-left: 24px; line-height: 1.5;">' + match + '</ol>';
+            });
+            
+            // 9. 处理任务列表
+            result = result.replace(/^- \[ \] (.+)$/gm, '<li style="margin: 4px 0; line-height: 1.5;"><input type="checkbox" disabled> $1</li>');
+            result = result.replace(/^- \[x\] (.+)$/gm, '<li style="margin: 4px 0; line-height: 1.5;"><input type="checkbox" checked disabled> $1</li>');
+            
+            // 10. 处理表格（基础支持）
+            result = result.replace(/\|(.+)\|\n\|[-:]+\|\n((?:\|.+\|\n)*)/g, function(match, header, rows) {
+                const headers = header.split('|').filter(h => h.trim()).map(h => `<th style="padding: 8px 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 600;">${h.trim()}</th>`).join('');
+                const rowLines = rows.split('\n').filter(r => r.trim()).map(row => {
+                    const cells = row.split('|').filter(c => c.trim()).map(c => `<td style="padding: 8px 12px; border: 1px solid #e2e8f0;">${c.trim()}</td>`).join('');
+                    return `<tr>${cells}</tr>`;
+                }).join('');
+                return `<table style="border-collapse: collapse; margin: 12px 0; width: 100%; border: 1px solid #e2e8f0;"><thead><tr>${headers}</tr></thead><tbody>${rowLines}</tbody></table>`;
+            });
+            
+            // 11. 处理链接
+            result = result.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: none; border-bottom: 1px solid #3b82f6;">$1</a>');
+            
+            // 12. 处理图片
+            result = result.replace(/!\[(.*?)\]\((.*?)\)/g, '<div style="margin: 12px 0;"><img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>');
+            
+            // 13. 处理水平分割线
+            result = result.replace(/^\s*([-*_]){3,}\s*$/gm, '<hr style="border: none; height: 1px; background: #e2e8f0; margin: 20px 0;">');
+            
+            // 14. 处理换行（两个空格或反斜杠换行）
+            result = result.replace(/  \n/g, '<br>');
+            result = result.replace(/\\\n/g, '<br>');
+            
+            // 15. 恢复行内数学公式（增强版）
+            inlineMaths.forEach(math => {
+                let processedMath = math.content;
+                
+                // 处理常见的数学符号
+                processedMath = processedMath
+                    .replace(/\\alpha/g, 'α')
+                    .replace(/\\beta/g, 'β')
+                    .replace(/\\gamma/g, 'γ')
+                    .replace(/\\delta/g, 'δ')
+                    .replace(/\\epsilon/g, 'ε')
+                    .replace(/\\zeta/g, 'ζ')
+                    .replace(/\\eta/g, 'η')
+                    .replace(/\\theta/g, 'θ')
+                    .replace(/\\iota/g, 'ι')
+                    .replace(/\\kappa/g, 'κ')
+                    .replace(/\\lambda/g, 'λ')
+                    .replace(/\\mu/g, 'μ')
+                    .replace(/\\nu/g, 'ν')
+                    .replace(/\\xi/g, 'ξ')
+                    .replace(/\\pi/g, 'π')
+                    .replace(/\\rho/g, 'ρ')
+                    .replace(/\\sigma/g, 'σ')
+                    .replace(/\\tau/g, 'τ')
+                    .replace(/\\upsilon/g, 'υ')
+                    .replace(/\\phi/g, 'φ')
+                    .replace(/\\chi/g, 'χ')
+                    .replace(/\\psi/g, 'ψ')
+                    .replace(/\\omega/g, 'ω')
+                    .replace(/\\infty/g, '∞')
+                    .replace(/\\sum/g, '∑')
+                    .replace(/\\prod/g, '∏')
+                    .replace(/\\int/g, '∫')
+                    .replace(/\\partial/g, '∂')
+                    .replace(/\\nabla/g, '∇')
+                    .replace(/\\times/g, '×')
+                    .replace(/\\div/g, '÷')
+                    .replace(/\\pm/g, '±')
+                    .replace(/\\mp/g, '∓')
+                    .replace(/\\cdot/g, '·')
+                    .replace(/\\leq/g, '≤')
+                    .replace(/\\geq/g, '≥')
+                    .replace(/\\neq/g, '≠')
+                    .replace(/\\approx/g, '≈')
+                    .replace(/\\equiv/g, '≡')
+                    .replace(/\\in/g, '∈')
+                    .replace(/\\notin/g, '∉')
+                    .replace(/\\subset/g, '⊂')
+                    .replace(/\\supset/g, '⊃')
+                    .replace(/\\cup/g, '∪')
+                    .replace(/\\cap/g, '∩')
+                    .replace(/\\forall/g, '∀')
+                    .replace(/\\exists/g, '∃')
+                    .replace(/\\sqrt/g, '√')
+                    .replace(/\\frac\s*{(.*?)}\s*{(.*?)}/g, '<span class="frac"><span class="top">$1</span><span class="bottom">$2</span></span>')
+                    .replace(/\\text\s*{(.*?)}/g, '$1');
+                
+                result = result.replace(
+                    `{{${math.id}}}`,
+                    `<span class="math-inline">${processedMath}</span>`
+                );
+            });
+            
+            // 16. 恢复数学公式块（增强版）
+            mathBlocks.forEach(math => {
+                let processedMath = math.content;
+                
+                // 处理常见的数学符号
+                processedMath = processedMath
+                    .replace(/\\alpha/g, 'α')
+                    .replace(/\\beta/g, 'β')
+                    .replace(/\\gamma/g, 'γ')
+                    .replace(/\\delta/g, 'δ')
+                    .replace(/\\epsilon/g, 'ε')
+                    .replace(/\\zeta/g, 'ζ')
+                    .replace(/\\eta/g, 'η')
+                    .replace(/\\theta/g, 'θ')
+                    .replace(/\\iota/g, 'ι')
+                    .replace(/\\kappa/g, 'κ')
+                    .replace(/\\lambda/g, 'λ')
+                    .replace(/\\mu/g, 'μ')
+                    .replace(/\\nu/g, 'ν')
+                    .replace(/\\xi/g, 'ξ')
+                    .replace(/\\pi/g, 'π')
+                    .replace(/\\rho/g, 'ρ')
+                    .replace(/\\sigma/g, 'σ')
+                    .replace(/\\tau/g, 'τ')
+                    .replace(/\\upsilon/g, 'υ')
+                    .replace(/\\phi/g, 'φ')
+                    .replace(/\\chi/g, 'χ')
+                    .replace(/\\psi/g, 'ψ')
+                    .replace(/\\omega/g, 'ω')
+                    .replace(/\\infty/g, '∞')
+                    .replace(/\\sum/g, '∑')
+                    .replace(/\\prod/g, '∏')
+                    .replace(/\\int/g, '∫')
+                    .replace(/\\partial/g, '∂')
+                    .replace(/\\nabla/g, '∇')
+                    .replace(/\\times/g, '×')
+                    .replace(/\\div/g, '÷')
+                    .replace(/\\pm/g, '±')
+                    .replace(/\\mp/g, '∓')
+                    .replace(/\\cdot/g, '·')
+                    .replace(/\\leq/g, '≤')
+                    .replace(/\\geq/g, '≥')
+                    .replace(/\\neq/g, '≠')
+                    .replace(/\\approx/g, '≈')
+                    .replace(/\\equiv/g, '≡')
+                    .replace(/\\in/g, '∈')
+                    .replace(/\\notin/g, '∉')
+                    .replace(/\\subset/g, '⊂')
+                    .replace(/\\supset/g, '⊃')
+                    .replace(/\\cup/g, '∪')
+                    .replace(/\\cap/g, '∩')
+                    .replace(/\\forall/g, '∀')
+                    .replace(/\\exists/g, '∃')
+                    .replace(/\\sqrt/g, '√')
+                    .replace(/\\frac\s*{(.*?)}\s*{(.*?)}/g, '<span class="frac"><span class="top">$1</span><span class="bottom">$2</span></span>')
+                    .replace(/\\text\s*{(.*?)}/g, '$1');
+                
+                result = result.replace(
+                    `{{${math.id}}}`,
+                    `<div class="math-block">${processedMath}</div>`
+                );
+            });
+            
+            // 17. 恢复行内代码
+            inlineCodes.forEach(code => {
+                result = result.replace(
+                    `{{${code.id}}}`,
+                    `<code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; font-family: 'Courier New', monospace; font-size: 13px; color: #374151;">${code.content}</code>`
+                );
+            });
+            
+            // 18. 恢复代码块
+            codeBlocks.forEach(block => {
+                const escapedContent = block.content
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+                
+                result = result.replace(
+                    `{{${block.id}}}`,
+                    `<div style="position: relative; margin: 16px 0; border-radius: 8px; overflow: hidden;">
+                        <div style="background: #1f2937; color: #f8fafc; padding: 8px 12px; font-size: 12px; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+                            <span>${block.language}</span>
+                            <button style="background: #3b82f6; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer;" onclick="copyCodeBlock(this)">复制代码</button>
+                        </div>
+                        <pre style="background: #0f172a; color: #e2e8f0; padding: 16px; margin: 0; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.4;"><code>${escapedContent}</code></pre>
+                    </div>`
+                );
+            });
+            
+            // 19. 处理段落（将连续文本包装成段落）
+            const lines = result.split('\n');
+            let processedLines = [];
+            let currentParagraph = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (!line) {
+                    // 空行，结束当前段落
+                    if (currentParagraph.length > 0) {
+                        processedLines.push(`<p style="margin: 8px 0; line-height: 1.6;">${currentParagraph.join(' ')}</p>`);
+                        currentParagraph = [];
+                    }
+                    processedLines.push('');
+                } else if (line.startsWith('<') && (line.includes('h1') || line.includes('h2') || line.includes('h3') || line.includes('h4') || line.includes('h5') || line.includes('h6') || line.includes('ul') || line.includes('ol') || line.includes('blockquote') || line.includes('table') || line.includes('hr') || line.includes('div') || line.includes('span class="math-inline"'))) {
+                    // 已经是HTML标签，直接添加
+                    if (currentParagraph.length > 0) {
+                        processedLines.push(`<p style="margin: 8px 0; line-height: 1.6;">${currentParagraph.join(' ')}</p>`);
+                        currentParagraph = [];
+                    }
+                    processedLines.push(line);
+                } else {
+                    currentParagraph.push(line);
+                }
+            }
+            
+            // 处理最后一个段落
+            if (currentParagraph.length > 0) {
+                processedLines.push(`<p style="margin: 8px 0; line-height: 1.6;">${currentParagraph.join(' ')}</p>`);
+            }
+            
+            result = processedLines.join('\n');
+            
+            return result;
+        }
+        
+        // 复制代码块函数
+        function copyCodeBlock(button) {
+            const codeBlock = button.parentElement.nextElementSibling;
+            const text = codeBlock.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '已复制';
+                button.style.background = '#10b981';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#3b82f6';
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                button.textContent = '复制失败';
+                button.style.background = '#ef4444';
+                setTimeout(() => {
+                    button.textContent = '复制代码';
+                    button.style.background = '#3b82f6';
+                }, 2000);
+            });
+        }
+        
+        // 复制行内代码函数（兼容旧版本）
+        function copyCode(button) {
+            const codeBlock = button.previousElementSibling;
+            const text = codeBlock.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '已复制';
+                button.style.background = '#10b981';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#3b82f6';
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                button.textContent = '复制失败';
+                button.style.background = '#ef4444';
+                setTimeout(() => {
+                    button.textContent = '复制';
+                    button.style.background = '#3b82f6';
+                }, 2000);
+            });
+        }
+        
+        // 隐藏的API密钥
+        const API_KEY = "74f181dfaa934ce5911ffc49ada3563b.aivDJtSXxpLDybs1";
+        
+        // 当前对话的聊天历史
+        let chatHistory = [];
+        
+        // 添加消息到聊天记录
+        function addMessageToChat(role, content, isLoading = false, model = '') {
+            const chatHistory = document.getElementById('chat-history');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            
+            if (isLoading) {
+                // 生成唯一的消息ID
+                const messageId = 'loading-message-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                
+                // 新的思考过程显示格式
+                messageDiv.innerHTML = `
+                    <div class="thinking-process">
+                        <div class="thinking-header">
+                            <div class="thinking-icon">🧠</div>
+                            <div class="thinking-title">思考过程</div>
+                            <div class="thinking-model">${model || 'WanQianCora'}</div>
+                        </div>
+                        <div class="thinking-content">
+                            <div class="thinking-status">${content}</div>
+                            <div class="thinking-realtime" id="thinking-text">开始思考...</div>
+                            <div class="thinking-animation">
+                                <div class="thinking-step">分析问题...</div>
+                                <div class="thinking-step">检索知识...</div>
+                                <div class="thinking-step">生成回答...</div>
+                            </div>
+                        </div>
+                        <div class="thinking-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="progress-text">处理中...</div>
+                        </div>
+                    </div>
+                `;
+                messageDiv.id = messageId;
+            } else if (role === 'ai') {
+                // AI最终答案显示在思考过程框内
+                messageDiv.innerHTML = `
+                    <div class="thinking-process completed">
+                        <div class="thinking-header" onclick="toggleThinkingProcess(this)" style="cursor: pointer;">
+                            <div class="thinking-icon">✅</div>
+                            <div class="thinking-title">思考完成</div>
+                            <div class="thinking-toggle">▼</div>
+                        </div>
+                        <div class="thinking-content" style="display: none;">
+                            <div class="thinking-original" style="max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; margin: 8px 0; background: #f8fafc;">
+                                无思考过程内容
+                            </div>
+                        </div>
+                        <div class="thinking-final" style="margin-top: 12px;">
+                            <div style="font-weight: 600; color: #3b82f6; margin-bottom: 8px;">最终答案：</div>
+                            <div class="final-answer" style="max-height: none; min-height: auto; white-space: pre-wrap; word-wrap: break-word;">${parseMarkdown(content)}</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 用户消息正常显示
+                messageDiv.innerHTML = parseMarkdown(content);
+            }
+            
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            
+            return messageDiv.id;
+        }
+        
+        // 更新加载消息
+        function updateLoadingMessage(content) {
+            const loadingMessage = document.getElementById('loading-message');
+            if (loadingMessage) {
+                loadingMessage.innerHTML = `<div class="loading">${content}</div>`;
+            }
+        }
+        
+        // 移除加载消息
+        function removeLoadingMessage() {
+            const loadingMessage = document.getElementById('loading-message');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+        }
+        
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            
+            if (!userInput.trim()) {
+                alert('请输入消息内容');
+                return;
+            }
+            
+            // 获取选中的模型
+            const selectedModel = document.getElementById('model-select').value;
+            
+            // 显示用户消息
+            addMessageToChat('user', userInput);
+            
+            // 将用户消息添加到聊天历史
+            chatHistory.push({ role: 'user', content: userInput });
+            
+            // 清空输入框
+            document.getElementById('user-input').value = '';
+            
+            // 显示加载状态并获取loadingId
+            const loadingId = addMessageToChat('ai', '正在生成回复...', true);
+            
+            try {
+                // 准备API请求数据
+                const requestData = {
+                    model: selectedModel,
+                    messages: chatHistory,
+                    stream: false
+                };
+                
+
+                
+
+                
+                // 调用ChatGLM API，使用流式传输
+                const response = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ...requestData,
+                        stream: true
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`请稍后再试 `);
+                }
+                
+                // 处理流式响应
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullResponse = '';
+                let thinkingContent = ''; // 思考过程内容
+                let finalAnswer = ''; // 最终答案内容
+                let isThinkingPhase = true; // 是否在思考阶段
+                
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        
+                        const chunk = decoder.decode(value);
+                        const lines = chunk.split('\n');
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                                try {
+                                    const data = JSON.parse(line.substring(6));
+                                    if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+                                        const content = data.choices[0].delta.content;
+                                        fullResponse += content;
+                                        
+                                        // 检测思考过程标记
+                                        if (content.includes('</think>')) {
+                                            isThinkingPhase = false;
+                                            // 立即分离思考过程和最终答案
+                                            const parts = fullResponse.split('</think>');
+                                            if (parts.length > 1) {
+                                                thinkingContent = parts[0].replace('<think>', '').trim();
+                                                finalAnswer = parts[1].trim();
+                                                // 切换到只显示最终答案
+                                                updateMessageContent(loadingId, finalAnswer);
+                                            }
+                                        } else if (content.includes('</think>')) {
+                                            isThinkingPhase = false;
+                                            // 立即分离思考过程和最终答案
+                                            const parts = fullResponse.split('</think>');
+                                            if (parts.length > 1) {
+                                                thinkingContent = parts[0].replace('<think>', '').trim();
+                                                finalAnswer = parts[1].trim();
+                                                // 切换到只显示最终答案
+                                                updateMessageContent(loadingId, finalAnswer);
+                                            }
+                                        } else if (isThinkingPhase) {
+                                            // 思考阶段：只显示思考过程（去掉<think>标记）
+                                            const currentThinking = fullResponse.replace('<think>', '').trim();
+                                            updateMessageContent(loadingId, currentThinking);
+                                        } else {
+                                            // 答案阶段：持续更新最终答案内容
+                                            const parts = fullResponse.split('</think>');
+                                            if (parts.length > 1) {
+                                                finalAnswer = parts[1].trim();
+                                            } else {
+                                                finalAnswer = fullResponse.replace('<think>', '').trim();
+                                            }
+                                            updateMessageContent(loadingId, finalAnswer);
+                                        }
+                                    }
+                                } catch (e) {
+                                    // 忽略JSON解析错误
+                                }
+                            }
+                        }
+                    }
+                } finally {
+                    reader.releaseLock();
+                }
+                
+                // 如果没有检测到</think>标记，使用完整响应作为最终答案
+                if (!finalAnswer) {
+                    finalAnswer = fullResponse.replace('<think>', '').trim();
+                } else {
+                    // 如果检测到了标记，确保最终答案是最新的
+                    const parts = fullResponse.split('</think>');
+                    if (parts.length > 1) {
+                        finalAnswer = parts[1].trim();
+                    } else {
+                        finalAnswer = fullResponse.replace('<think>', '').trim();
+                    }
+                }
+                
+                // 确保思考内容正确提取
+                if (isThinkingPhase) {
+                    thinkingContent = fullResponse.replace('<think>', '').trim();
+                } else {
+                    // 如果不在思考阶段，确保思考内容正确
+                    const parts = fullResponse.split('</think>');
+                    if (parts.length > 1) {
+                        thinkingContent = parts[0].replace('<think>', '').trim();
+                    } else {
+                        const parts2 = fullResponse.split('</think>');
+                        if (parts2.length > 1) {
+                            thinkingContent = parts2[0].replace('<think>', '').trim();
+                        }
+                    }
+                }
+                
+                // 将最终答案添加到聊天历史
+                chatHistory.push({ role: 'assistant', content: finalAnswer });
+                
+                // 完成思考过程，显示最终答案
+                completeThinkingProcess(loadingId, thinkingContent, finalAnswer);
+
+            } catch (error) {
+                console.error('Error:', error);
+                updateMessageContent(loadingId, `服务器繁忙中，${error.message}`);
+            }
+        }
+        
+
+        
+        function scrollToBottom() {
+            const chatHistory = document.getElementById('chat-history');
+            if (chatHistory) {
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+        }
+        
+        function updateMessageContent(elementId, newContent) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                // 如果是思考过程消息，更新实时思考文字
+                const thinkingRealtime = element.querySelector('.thinking-realtime');
+                if (thinkingRealtime) {
+                    thinkingRealtime.textContent = newContent;
+                    
+                    // 自动滚动到最新内容
+                    thinkingRealtime.scrollTop = thinkingRealtime.scrollHeight;
+                } else {
+                    // 如果不是思考过程消息，正常更新内容
+                    element.innerHTML = parseMarkdown(newContent);
+                    element.classList.remove('loading');
+                }
+                scrollToBottom();
+            }
+        }
+        
+        // 完成思考过程，显示最终答案
+        function completeThinkingProcess(elementId, thinkingContent, finalAnswer) {
+            const element = document.getElementById(elementId);
+            if (element && element.querySelector('.thinking-process')) {
+                // 保持思考过程框，但添加折叠功能
+                const thinkingProcess = element.querySelector('.thinking-process');
+                
+                // 创建折叠/展开的界面 - 最终答案始终显示，思考过程可折叠
+                thinkingProcess.innerHTML = `
+                    <div class="thinking-process completed">
+                        <div class="thinking-header" onclick="toggleThinkingProcess(this)" style="cursor: pointer;">
+                            <div class="thinking-icon">✅</div>
+                            <div class="thinking-title">思考完成</div>
+                            <div class="thinking-toggle">▼</div>
+                        </div>
+                        <div class="thinking-content" style="display: none;">
+                            <div class="thinking-original" style="max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; margin: 8px 0; background: #f8fafc;">
+                                ${thinkingContent ? parseMarkdown(thinkingContent) : '无思考过程内容'}
+                            </div>
+                        </div>
+                        <div class="thinking-final" style="margin-top: 12px;">
+                            <div style="font-weight: 600; color: #3b82f6; margin-bottom: 8px;">最终答案：</div>
+                            <div class="final-answer" style="max-height: none; min-height: auto; white-space: pre-wrap; word-wrap: break-word;">${parseMarkdown(finalAnswer)}</div>
+                        </div>
+                    </div>
+                `;
+                
+                element.classList.remove('loading');
+                scrollToBottom();
+            }
+        }
+        
+        // 切换思考过程的折叠/展开
+        function toggleThinkingProcess(headerElement) {
+            const thinkingProcess = headerElement.closest('.thinking-process');
+            const content = thinkingProcess.querySelector('.thinking-content');
+            const toggleIcon = headerElement.querySelector('.thinking-toggle');
+            
+            if (content.style.display === 'none') {
+                // 展开
+                content.style.display = 'block';
+                toggleIcon.textContent = '▲';
+                toggleIcon.style.transform = 'rotate(0deg)';
+            } else {
+                // 折叠
+                content.style.display = 'none';
+                toggleIcon.textContent = '▼';
+                toggleIcon.style.transform = 'rotate(0deg)';
+            }
+        }
+        
+        // 允许通过回车键发送消息
+        document.getElementById('user-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 输入框自动调整高度
+        function autoResizeTextarea() {
+            const textarea = document.getElementById('user-input');
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+        }
+
+        // 监听输入框输入事件，自动调整高度
+        document.getElementById('user-input').addEventListener('input', autoResizeTextarea);
+
+        // 监听输入框聚焦事件，初始调整高度
+        document.getElementById('user-input').addEventListener('focus', autoResizeTextarea);
+
+        // 监听输入框粘贴事件，自动调整高度
+        document.getElementById('user-input').addEventListener('paste', function() {
+            setTimeout(autoResizeTextarea, 10);
+        });
+        
+        // 滚动到底部的函数
+        function scrollToBottom() {
+            const chatContainer = document.querySelector('.chat-container');
+            if (chatContainer) {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
+        
+        // 设置自动滚动
+        function setupAutoScroll() {
+            const chatHistory = document.getElementById('chat-history');
+            const chatContainer = document.querySelector('.chat-container');
+            
+            if (chatHistory && chatContainer) {
+                // 监听内容变化，新消息出现时滚动到底部
+                const observer = new MutationObserver(() => {
+                    scrollToBottom();
+                });
+                
+                observer.observe(chatHistory, {
+                    childList: true,
+                    subtree: true
+                });
+                
+                // 初始滚动到底部
+                scrollToBottom();
+            }
+        }
+        
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                   window.innerWidth <= 768;
+        }
+        
+        // 设置移动端适配
+        function setupMobileAdaptation() {
+            if (isMobileDevice()) {
+                // 隐藏原导航栏
+                const navbar = document.querySelector('.navbar');
+                if (navbar) {
+                    navbar.style.display = 'none';
+                }
+                
+                // 调整聊天容器
+                const chatContainer = document.querySelector('.chat-container');
+                if (chatContainer) {
+                    chatContainer.style.top = '0';
+                    chatContainer.style.bottom = '0';
+                    chatContainer.style.left = '0';
+                    chatContainer.style.right = '0';
+                }
+                
+                // 调整输入容器
+                const inputContainer = document.querySelector('.input-container');
+                if (inputContainer) {
+                    inputContainer.style.bottom = '0';
+                    inputContainer.style.left = '0';
+                    inputContainer.style.right = '0';
+                }
+                
+                // 调整消息宽度
+                const messages = document.querySelectorAll('.message');
+                messages.forEach(msg => {
+                    msg.style.maxWidth = '90%';
+                });
+            }
+        }
+        
+        // 页面切换功能
+        function switchPage(pageId) {
+            // 隐藏所有页面
+            const pages = document.querySelectorAll('.content-section');
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 显示选中的页面
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // 更新侧边栏按钮状态
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 根据页面ID找到对应的侧边栏按钮并激活
+            const pageIndex = getPageIndex(pageId);
+            if (pageIndex >= 0 && sidebarItems[pageIndex]) {
+                sidebarItems[pageIndex].classList.add('active');
+            }
+            
+            // 控制输入区域的显示
+            const inputContainer = document.querySelector('.input-container');
+            if (pageId === 'current-chat') {
+                inputContainer.classList.remove('hidden');
+            } else {
+                inputContainer.classList.add('hidden');
+            }
+        }
+        
+        // 获取页面索引
+        function getPageIndex(pageId) {
+            const pageMap = {
+                'current-chat': 0,
+                'chat-history-page': 1,
+                'settings-page': 2,
+                'help-page': 3,
+                'search-page': 4
+            };
+            return pageMap[pageId] || -1;
+        }
+        
+        // 设置侧边栏按钮点击事件
+        function setupSidebarButtons() {
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            const pageIds = ['current-chat', 'chat-history-page', 'settings-page', 'help-page', 'search-page'];
+            
+            sidebarItems.forEach((item, index) => {
+                item.addEventListener('click', function() {
+                    switchPage(pageIds[index]);
+                });
+            });
+        }
+        
+        // 搜索功能
+        function performSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchTerm = searchInput.value.trim();
+            
+            if (searchTerm) {
+                alert('搜索功能正在开发中，搜索关键词：' + searchTerm);
+            } else {
+                alert('请输入搜索关键词');
+            }
+        }
+        
+        // 主题切换功能
+        function switchTheme(theme) {
+            const body = document.body;
+            
+            if (theme === 'dark') {
+                body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            switchTheme(savedTheme);
+            
+            // 设置主题选择器的值
+            const themeSelect = document.getElementById('theme-select');
+            if (themeSelect) {
+                themeSelect.value = savedTheme;
+                themeSelect.addEventListener('change', function() {
+                    switchTheme(this.value);
+                });
+            }
+        }
+        
+        // 移动端菜单切换
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-nav-menu');
+            if (mobileMenu) {
+                mobileMenu.classList.toggle('active');
+                
+                // 防止背景滚动
+                if (mobileMenu.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            }
+        }
+        
+        // 移动端点击外部关闭菜单
+        function setupMobileMenuClose() {
+            const mobileMenu = document.getElementById('mobile-nav-menu');
+            if (mobileMenu) {
+                mobileMenu.addEventListener('click', function(e) {
+                    if (e.target === mobileMenu) {
+                        toggleMobileMenu();
+                    }
+                });
+            }
+        }
+        
+        // 移动端适配初始化
+        function initMobileAdaptation() {
+            // 检测是否为移动设备
+            if (isMobileDevice()) {
+                // 显示移动端菜单按钮
+                const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+                if (mobileMenuBtn) {
+                    mobileMenuBtn.style.display = 'block';
+                }
+                
+                // 隐藏桌面端导航菜单
+                const navMenu = document.querySelector('.nav-menu');
+                if (navMenu) {
+                    navMenu.style.display = 'none';
+                }
+                
+                // 调整侧边栏为底部导航
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) {
+                    sidebar.style.display = 'flex';
+                }
+                
+                // 调整主内容区域
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) {
+                    mainContent.style.marginBottom = '60px';
+                    mainContent.style.height = 'calc(100vh - 60px)';
+                    mainContent.style.overflow = 'hidden';
+                }
+                
+                // 调整聊天容器高度
+                const chatContainer = document.querySelector('.chat-container');
+                if (chatContainer) {
+                    chatContainer.style.height = 'calc(100vh - 60px - 80px)';
+                    chatContainer.style.overflow = 'hidden';
+                }
+                
+                // 调整聊天历史区域
+                const chatHistory = document.getElementById('chat-history');
+                if (chatHistory) {
+                    chatHistory.style.height = '100%';
+                    chatHistory.style.overflowY = 'auto';
+                    chatHistory.style.paddingBottom = '80px';
+                    chatHistory.style.boxSizing = 'border-box';
+                }
+                
+                // 调整输入容器位置
+                const inputContainer = document.querySelector('.input-container');
+                if (inputContainer) {
+                    inputContainer.style.position = 'fixed';
+                    inputContainer.style.bottom = '60px';
+                    inputContainer.style.left = '0';
+                    inputContainer.style.right = '0';
+                    inputContainer.style.zIndex = '100';
+                    inputContainer.style.height = '80px';
+                    inputContainer.style.boxSizing = 'border-box';
+                }
+            } else {
+                // 桌面端隐藏移动端菜单按钮
+                const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+                if (mobileMenuBtn) {
+                    mobileMenuBtn.style.display = 'none';
+                }
+                
+                // 显示桌面端导航菜单
+                const navMenu = document.querySelector('.nav-menu');
+                if (navMenu) {
+                    navMenu.style.display = 'flex';
+                }
+                
+                // 重置主内容区域
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) {
+                    mainContent.style.height = '';
+                    mainContent.style.overflow = '';
+                }
+                
+                // 重置聊天容器高度
+                const chatContainer = document.querySelector('.chat-container');
+                if (chatContainer) {
+                    chatContainer.style.height = '';
+                    chatContainer.style.overflow = '';
+                }
+                
+                // 重置聊天历史区域
+                const chatHistory = document.getElementById('chat-history');
+                if (chatHistory) {
+                    chatHistory.style.height = '';
+                    chatHistory.style.overflowY = '';
+                    chatHistory.style.paddingBottom = '';
+                    chatHistory.style.boxSizing = '';
+                }
+                
+                // 重置输入容器位置
+                const inputContainer = document.querySelector('.input-container');
+                if (inputContainer) {
+                    inputContainer.style.position = '';
+                    inputContainer.style.bottom = '';
+                    inputContainer.style.left = '';
+                    inputContainer.style.right = '';
+                    inputContainer.style.zIndex = '';
+                    inputContainer.style.height = '';
+                    inputContainer.style.boxSizing = '';
+                }
+            }
+        }
+        
+        // 窗口大小变化监听
+        function setupWindowResizeListener() {
+            window.addEventListener('resize', function() {
+                initMobileAdaptation();
+            });
+        }
+        
+        // 初始化所有设置
+        function initSettings() {
+            // 字体大小设置
+            const fontSizeSelect = document.getElementById('font-size-select');
+            const savedFontSize = localStorage.getItem('fontSize') || 'medium';
+            if (fontSizeSelect) {
+                fontSizeSelect.value = savedFontSize;
+                switchFontSize(savedFontSize);
+                fontSizeSelect.addEventListener('change', function() {
+                    switchFontSize(this.value);
+                    localStorage.setItem('fontSize', this.value);
+                });
+            }
+            
+            // 自动保存设置
+            const autoSaveSelect = document.getElementById('auto-save-select');
+            const savedAutoSave = localStorage.getItem('autoSave') || 'enabled';
+            if (autoSaveSelect) {
+                autoSaveSelect.value = savedAutoSave;
+                autoSaveSelect.addEventListener('change', function() {
+                    localStorage.setItem('autoSave', this.value);
+                });
+            }
+            
+            // 显示思考过程设置
+            const showThinkingSelect = document.getElementById('show-thinking-select');
+            const savedShowThinking = localStorage.getItem('showThinking') || 'enabled';
+            if (showThinkingSelect) {
+                showThinkingSelect.value = savedShowThinking;
+                switchShowThinking(savedShowThinking);
+                showThinkingSelect.addEventListener('change', function() {
+                    switchShowThinking(this.value);
+                    localStorage.setItem('showThinking', this.value);
+                });
+            }
+            
+            // 消息动画设置
+            const messageAnimationSelect = document.getElementById('message-animation-select');
+            const savedMessageAnimation = localStorage.getItem('messageAnimation') || 'enabled';
+            if (messageAnimationSelect) {
+                messageAnimationSelect.value = savedMessageAnimation;
+                switchMessageAnimation(savedMessageAnimation);
+                messageAnimationSelect.addEventListener('change', function() {
+                    switchMessageAnimation(this.value);
+                    localStorage.setItem('messageAnimation', this.value);
+                });
+            }
+            
+            // API密钥设置
+            const apiKeyInput = document.getElementById('api-key-input');
+            const savedApiKey = localStorage.getItem('apiKey') || '';
+            if (apiKeyInput) {
+                apiKeyInput.value = savedApiKey;
+                apiKeyInput.addEventListener('change', function() {
+                    localStorage.setItem('apiKey', this.value);
+                });
+            }
+            
+            // API端点设置
+            const apiEndpointInput = document.getElementById('api-endpoint-input');
+            const savedApiEndpoint = localStorage.getItem('apiEndpoint') || '';
+            if (apiEndpointInput) {
+                apiEndpointInput.value = savedApiEndpoint;
+                apiEndpointInput.addEventListener('change', function() {
+                    localStorage.setItem('apiEndpoint', this.value);
+                });
+            }
+            
+            // 最大上下文长度设置
+            const maxContextInput = document.getElementById('max-context-input');
+            const savedMaxContext = localStorage.getItem('maxContext') || '4000';
+            if (maxContextInput) {
+                maxContextInput.value = savedMaxContext;
+                maxContextInput.addEventListener('change', function() {
+                    localStorage.setItem('maxContext', this.value);
+                });
+            }
+            
+            // 温度设置
+            const temperatureSlider = document.getElementById('temperature-slider');
+            const temperatureValue = document.getElementById('temperature-value');
+            const savedTemperature = localStorage.getItem('temperature') || '0.7';
+            if (temperatureSlider && temperatureValue) {
+                temperatureSlider.value = savedTemperature;
+                temperatureValue.textContent = savedTemperature;
+                temperatureSlider.addEventListener('input', function() {
+                    temperatureValue.textContent = this.value;
+                    localStorage.setItem('temperature', this.value);
+                });
+            }
+        }
+        
+        // 切换字体大小
+        function switchFontSize(size) {
+            const body = document.body;
+            body.classList.remove('font-small', 'font-medium', 'font-large');
+            body.classList.add(`font-${size}`);
+        }
+        
+        // 切换思考过程显示
+        function switchShowThinking(show) {
+            const body = document.body;
+            if (show === 'disabled') {
+                body.classList.add('hide-thinking');
+            } else {
+                body.classList.remove('hide-thinking');
+            }
+        }
+        
+        // 切换消息动画
+        function switchMessageAnimation(animation) {
+            const body = document.body;
+            if (animation === 'disabled') {
+                body.classList.add('no-animation');
+            } else {
+                body.classList.remove('no-animation');
+            }
+        }
+        
+        // 导出设置
+        function exportSettings() {
+            const settings = {
+                theme: localStorage.getItem('theme') || 'light',
+                fontSize: localStorage.getItem('fontSize') || 'medium',
+                autoSave: localStorage.getItem('autoSave') || 'enabled',
+                showThinking: localStorage.getItem('showThinking') || 'enabled',
+                messageAnimation: localStorage.getItem('messageAnimation') || 'enabled',
+                apiKey: localStorage.getItem('apiKey') || '',
+                apiEndpoint: localStorage.getItem('apiEndpoint') || '',
+                maxContext: localStorage.getItem('maxContext') || '4000',
+                temperature: localStorage.getItem('temperature') || '0.7'
+            };
+            
+            const dataStr = JSON.stringify(settings, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'wanqiancora-settings.json';
+            link.click();
+        }
+        
+        // 导入设置
+        function importSettings() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const settings = JSON.parse(e.target.result);
+                        
+                        // 应用设置
+                        Object.keys(settings).forEach(key => {
+                            localStorage.setItem(key, settings[key]);
+                        });
+                        
+                        // 重新初始化设置
+                        initSettings();
+                        initTheme();
+                        
+                        alert('设置导入成功！');
+                    } catch (error) {
+                        alert('导入失败：文件格式错误');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // 重置设置
+        function resetSettings() {
+            if (confirm('确定要重置所有设置吗？这将清除所有自定义设置。')) {
+                // 清除所有设置
+                localStorage.removeItem('theme');
+                localStorage.removeItem('fontSize');
+                localStorage.removeItem('autoSave');
+                localStorage.removeItem('showThinking');
+                localStorage.removeItem('messageAnimation');
+                localStorage.removeItem('apiKey');
+                localStorage.removeItem('apiEndpoint');
+                localStorage.removeItem('maxContext');
+                localStorage.removeItem('temperature');
+                
+                // 重新初始化设置
+                initSettings();
+                initTheme();
+                
+                alert('设置已重置为默认值！');
+            }
+        }
+        
+        // 页面加载完成后设置自动滚动和移动端适配
+        document.addEventListener('DOMContentLoaded', function() {
+            setupAutoScroll();
+            scrollToBottom();
+            setupSidebarButtons(); // 初始化侧边栏按钮
+            initTheme(); // 初始化主题
+            initSettings(); // 初始化所有设置
+            initMobileAdaptation(); // 初始化移动端适配
+            setupMobileMenuClose(); // 设置移动端菜单关闭功能
+            setupWindowResizeListener(); // 设置窗口大小变化监听
+        });
+        
+        // 防止F12查看源代码
+        document.addEventListener('keydown', function(e) {
+            // 禁用F12键
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            // 禁用Ctrl+Shift+I (开发者工具)
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                return false;
+            }
+            // 禁用Ctrl+Shift+J (控制台)
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                e.preventDefault();
+                return false;
+            }
+            // 禁用Ctrl+U (查看源代码)
+            if (e.ctrlKey && e.key === 'U') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // 禁用右键菜单
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 禁用文本选择和复制
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 禁用拖拽
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 复制代码功能
+        function copyCode(button) {
+            const codeBlock = button.previousElementSibling;
+            const codeText = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(codeText).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                button.textContent = '复制失败';
+            });
+        }
+        
+
+    </script>
+</body>
+</html>

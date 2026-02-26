@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WanQianCora - 内测验证</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background: #ffffff;
+            padding: 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            height: 70px;
+        }
+        
+        .nav-logo {
+            color: #3b82f6;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-logo::before {
+            content: "⚡";
+            font-size: 2rem;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 30px;
+        }
+        
+        .nav-menu li a {
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+        
+        .nav-menu li a:hover {
+            background: #f3f4f6;
+            color: #3b82f6;
+        }
+        
+        .nav-menu li a.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .container {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 50px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .logo {
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        
+        .logo p {
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .error-message {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #10b981;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 15px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            margin-top: 30px;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+        
+        .footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 15px;
+                height: 60px;
+            }
+            
+            .nav-logo {
+                font-size: 1.5rem;
+            }
+            
+            .nav-menu {
+                gap: 15px;
+            }
+            
+            .nav-menu li a {
+                font-size: 14px;
+                padding: 6px 12px;
+            }
+            
+            .main-content {
+                padding: 40px 20px;
+            }
+            
+            .container {
+                padding: 35px 30px;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
+            
+            .logo p {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .nav-menu {
+                gap: 10px;
+            }
+            
+            .nav-menu li a {
+                font-size: 13px;
+                padding: 5px 10px;
+            }
+            
+            .container {
+                padding: 25px 20px;
+            }
+            
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">WanQian</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="../index.html">Tian-Tech首页</a></li>
+                <li><a href="WanQiandoc.html">文档</a></li>
+                <li><a href="../about us.html">关于我们</a></li>
+                <li><a href="../support.html">技术支持</a></li>
+                <li><a href="../contact.html">联系我们</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="container">
+            <div class="logo">
+                <h1>欢迎内测WanQianCora</h1>
+                <p>WanQianCora已于2025年11月15日正式开放内测。</p>
+                <p>目前已开放<span id="codeCount">0</span>个邀测码</p>
+            </div>
+            
+            <form id="accessForm">
+                <div class="form-group">
+                    <label for="accessCode">请输入内测码：</label>
+                    <input type="password" id="accessCode" placeholder="输入内测访问码" required>
+                </div>
+                
+                <button type="submit" class="btn">验证并进入</button>
+                
+                <div class="error-message" id="errorMessage">
+                    内测码错误，请重新输入
+                </div>
+                
+                <div class="success-message" id="successMessage">
+                    验证成功，正在跳转...
+                </div>
+                
+                <div class="loading" id="loading">验证中...</div>
+            </form>
+            
+            <div class="footer">
+                <p>需要内测码？请联系管理员获取</p>
+                <p>或访问 <a href="mailto:tiantechnology@163.com">tiantechnology@163.com</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 正确的内测码数组
+        const CORRECT_ACCESS_CODES = [
+            "WanQian2024",
+            "WanQianCora1",
+            "WanQianCora2", 
+            "WanQianCora3",
+            "WanQianCora4",
+            "WanQianCora5",
+            "AsdAsergsssrew",
+            "dsfFurhehhsdfjt",
+            "Hjhhrjytsuiejnrg",
+            "ZhuYX20240903",
+            "5647382910",
+            "8473629105",
+            "2938475601",
+            "7483920165",
+            "9384756201",
+            "4758392016",
+            "8392017465",
+            "2019384756",
+            "5647382019",
+            "7382910564",
+            "2910564738",
+            "1056473829",
+            "4738291056",
+            "8291056473",
+            "9105647382",
+            "6473829105",
+            "3829105647",
+            "2910564738",
+            "1056473829",
+            "4738291056",
+            "8291056473",
+            "9105647382",
+            "6473829105",
+            "3829105647",
+            "2910564738",
+            "1056473829",
+            "4738291056"
+        ];
+        
+        document.getElementById('accessForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const accessCode = document.getElementById('accessCode').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const loading = document.getElementById('loading');
+            
+            // 隐藏所有消息
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            loading.style.display = 'none';
+            
+            // 显示加载状态
+            loading.style.display = 'block';
+            
+            // 模拟验证过程
+            setTimeout(() => {
+                if (CORRECT_ACCESS_CODES.includes(accessCode)) {
+                    // 验证成功
+                    loading.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    
+                    // 2秒后跳转到主页面
+                    setTimeout(() => {
+                        window.location.href = 'WanQianCora.html';
+                    }, 2000);
+                } else {
+                    // 验证失败
+                    loading.style.display = 'none';
+                    errorMessage.style.display = 'block';
+                    
+                    // 清空输入框
+                    document.getElementById('accessCode').value = '';
+                    document.getElementById('accessCode').focus();
+                }
+            }, 1000);
+        });
+        
+        // 页面加载完成后自动聚焦到输入框
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('accessCode').focus();
+        });
+        
+        // 添加键盘快捷键支持
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Enter 快速提交
+            if (e.ctrlKey && e.key === 'Enter') {
+                document.getElementById('accessForm').requestSubmit();
+            }
+            
+            // ESC 清空输入框
+            if (e.key === 'Escape') {
+                document.getElementById('accessCode').value = '';
+            }
+            
+            // 禁用F12、Ctrl+Shift+I、Ctrl+Shift+J等开发者工具快捷键
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.key === 'F11') ||
+                (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        });
+        
+        // 禁用右键菜单（防止查看源代码）
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // 禁用文本选择（防止复制代码）
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // 禁用拖拽（防止拖拽查看源代码）
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // 动态显示邀测码数量
+        function updateCodeCount() {
+            // 设置起始时间：2025年11月15日10:54
+            const startDate = new Date(2025, 10, 15, 10, 54, 0); // 注意：月份从0开始，11月是10
+            const now = new Date();
+            
+            // 计算时间差（毫秒）
+            const timeDiff = now - startDate;
+            
+            // 如果当前时间早于起始时间，显示0
+            if (timeDiff < 0) {
+                document.getElementById('codeCount').textContent = '0';
+                return;
+            }
+            
+            // 计算经过的10秒间隔数量
+            const secondsDiff = Math.floor(timeDiff / 1000);
+            const tenSecondIntervals = Math.floor(secondsDiff / 10);
+            
+            // 显示邀测码数量（无上限限制）
+            document.getElementById('codeCount').textContent = tenSecondIntervals.toString();
+        }
+        
+        // 页面加载时初始化计数
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCodeCount();
+            // 每10秒更新一次计数
+            setInterval(updateCodeCount, 10000);
+        });
+        
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navbar.style.backdropFilter = 'blur(10px)';
+            } else {
+                navbar.style.background = '#ffffff';
+                navbar.style.backdropFilter = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

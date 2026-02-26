@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WanQian AI助手 - 智能聊天与图像生成</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="WanQianchat.css">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        /* 思考过程折叠样式 */
+        .thinking-container {
+            margin: 10px 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .thinking-header {
+            background-color: #f8fafc;
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .thinking-header:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .thinking-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+        }
+        
+        .toggle-icon {
+            font-size: 12px;
+            color: #64748b;
+            transition: transform 0.2s ease;
+        }
+        
+        .toggle-icon.collapsed {
+            transform: rotate(90deg);
+        }
+        
+        .thinking-content {
+            padding: 0 16px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background-color: #ffffff;
+        }
+        
+        .thinking-content.expanded {
+            padding: 16px;
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <!-- 移动端菜单按钮 -->
+            <button class="mobile-menu-toggle" onclick="window.toggleMobileMenu()">
+                <i class="fa fa-bars"></i>
+            </button>
+            
+            <!-- 头部 -->
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🔍</span>
+                    <span class="logo-text">WanQian AI助手</span>
+                </div>
+                <button class="new-chat-btn" onclick="location.reload(); return false;">+ 开启新对话</button>
+            </div>
+            
+            <!-- 模型选择 -->
+            <div class="sidebar-content">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">选择模型</div>
+                    <select id="model-select-sidebar" class="model-selector-full">
+                        <option value="glm-z1-flash">WanQianW1-exp2 (聊天)</option>
+                        <option value="glm-z1-flash">WanQianCora (聊天)</option>
+                        <option value="glm-4.7-flash">WanQianTurbo (聊天)</option>
+                        <option value="glm-4.7-flash">WanQian7 (聊天)</option>
+                        <option value="glm-4.7-flash">WanQian6 (聊天)</option>
+                        <option value="glm-4-flash-250414">WanQianQ1 (聊天)</option>
+                        <option value="glm-4-flash-250414">WanQianQ2 (聊天)</option>
+                    </select>
+                </div>
+                
+                <!-- 清空对话按钮 -->
+                <div class="sidebar-section">
+                    <button onclick="window.clearChat()" class="clear-chat-btn">
+                        <i class="fa fa-trash mr-2"></i>
+                        清空对话
+                    </button>
+                </div>
+                
+                <!-- 对话历史 -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">对话历史</div>
+                    <div class="chat-history-item">
+                        <div class="text-sm font-medium text-primary">新对话</div>
+                        <div class="text-xs text-gray-500 mt-1">今天</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部用户信息 -->
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">👤</div>
+                    <div class="user-details">
+                        <div class="user-name">未登录</div>
+                        <div class="user-status">在线</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 聊天标题栏 -->
+            <div class="chat-header">
+                <div class="chat-title">WanQian AI助手</div>
+                <div class="chat-actions">
+                    <button class="action-btn">
+                        <i class="fa fa-share-alt"></i>
+                    </button>
+                    <button class="action-btn" onclick="window.location.href='WanQianimagine.html'">
+                        <i class="fa fa-picture-o"></i>
+                        <span style="margin-left: 4px;">图片生成</span>
+                    </button>
+                    <button class="action-btn">
+                        <i class="fa fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 聊天记录区域 -->
+            <div id="chat-history">
+                <!-- 欢迎消息 -->
+                <div class="welcome-message">
+                    <div class="welcome-icon">🎨</div>
+                    <div class="welcome-text">今天想生成什么图像或聊天？</div>
+                    <div class="welcome-subtext">我是WanQian，你的智能助手</div>
+                </div>
+            </div>
+            
+            <!-- 输入区域 -->
+            <div class="input-container">
+                <div class="model-selector">
+                    <label for="model-select">模型:</label>
+                    <select id="model-select">
+                        <option value="glm-z1-flash">WanQianW1-exp2 (聊天)</option>
+                        <option value="glm-z1-flash">WanQianCora (聊天)</option>
+                        <option value="glm-4.7-flash">WanQianTurbo (聊天)</option>
+                        <option value="glm-4.7-flash">WanQian7 (聊天)</option>
+                        <option value="glm-4-flash-250414">WanQian6 (聊天)</option>
+                        <option value="glm-4-flash-250414">WanQianQ1 (聊天)</option>
+                        <option value="glm-4-flash-250414">WanQianQ2 (聊天)</option>
+                    </select>
+                </div>
+                <div class="input-wrapper">
+                    <textarea 
+                        id="user-input" 
+                        placeholder="请输入消息或图像描述..."
+                        oninput="autoResizeTextarea()"
+                    ></textarea>
+                    <div class="input-actions">
+                        <button class="action-btn">📎</button>
+                        <button class="action-btn">🎤</button>
+                        <button 
+                            onclick="window.sendMessage()" 
+                            class="send-btn"
+                        >
+                            <i class="fa fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="input-hint">
+                    按 Enter 发送消息，Shift + Enter 换行
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 遮罩层 -->
+    <div class="overlay" onclick="toggleMobileMenu()"></div>
+    
+    <script>
+        // 预加载调试信息
+        console.log('WanQianchat.html 开始加载');
+        console.log('当前URL:', window.location.href);
+        console.log('脚本路径:', 'WanQiannewchat.js');
+    </script>
+    <script src="markdown.js"></script>
+    <script src="WanQiannewchat.js"></script>
+    <script>
+        // 后加载调试信息
+        console.log('WanQiannewchat.js 加载完成');
+        console.log('sendMessage函数是否存在:', typeof window.sendMessage);
+        console.log('autoResizeTextarea函数是否存在:', typeof window.autoResizeTextarea);
+        console.log('toggleMobileMenu函数是否存在:', typeof window.toggleMobileMenu);
+        console.log('clearChat函数是否存在:', typeof window.clearChat);
+        console.log('parseMarkdown函数是否存在:', typeof window.parseMarkdown);
+        console.log('copyCodeBlock函数是否存在:', typeof window.copyCodeBlock);
+    </script>
+</body>
+</html>

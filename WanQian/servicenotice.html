@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务协议 - WanQian 产品文档</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            background: #ffffff;
+            color: #333333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo::before {
+            content: "⚡";
+            font-size: 20px;
+        }
+        
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .platform-link {
+            font-size: 13px;
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        /* 主容器 */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 250px;
+            background: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px 0;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        
+        .nav-section {
+            margin-bottom: 24px;
+        }
+        
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 20px 8px;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin-bottom: 2px;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 8px 20px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 13px;
+        }
+        
+        .nav-link:hover {
+            background: #f3f4f6;
+            color: #3b82f6;
+        }
+        
+        .nav-link.active {
+            background: #dbeafe;
+            color: #1e40af;
+            font-weight: 500;
+        }
+        
+        .nav-submenu {
+            list-style: none;
+            margin-left: 16px;
+        }
+        
+        .nav-subitem {
+            margin-bottom: 1px;
+        }
+        
+        .nav-sublink {
+            display: block;
+            padding: 6px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 12px;
+        }
+        
+        .nav-sublink:hover {
+            background: #f3f4f6;
+            color: #3b82f6;
+        }
+        
+        .nav-sublink.active {
+            background: #dbeafe;
+            color: #1e40af;
+            font-weight: 500;
+        }
+        
+        /* 右侧内容区 */
+        .content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+        
+        /* 面包屑导航 */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        .breadcrumb-home {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        
+        .breadcrumb-separator {
+            font-size: 10px;
+        }
+        
+        .breadcrumb-current {
+            color: #1f2937;
+            font-weight: 500;
+        }
+        
+        /* 内容标题 */
+        .content-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 24px;
+        }
+        
+        /* 内容段落 */
+        .content-text {
+            font-size: 15px;
+            color: #4b5563;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        
+        /* 表格 */
+        .api-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        
+        .api-table th,
+        .api-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .api-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .api-table td {
+            color: #4b5563;
+        }
+        
+        /* 代码块 */
+        .code-block {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+        
+        .code-block pre {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #374151;
+        }
+        
+        /* 提示信息 */
+        .note {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #92400e;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .content {
+                padding: 24px;
+            }
+            
+            .header-right {
+                gap: 8px;
+            }
+            
+            .platform-link {
+                display: none;
+            }
+        }
+        
+        /* 服务协议样式 */
+        .agreement-section {
+            margin-bottom: 32px;
+        }
+        
+        .agreement-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        
+        .agreement-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+        
+        .agreement-section p {
+            margin-bottom: 12px;
+        }
+        
+        .agreement-section ul {
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+        
+        .agreement-section li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">WanQian</div>
+            <div class="header-title">产品文档</div>
+        </div>
+        <div class="header-right">
+            <div class="language-selector">
+                <span>中文 (中国)</span>
+                <span>▼</span>
+            </div>
+            <a href="servicenotice.html" class="platform-link">服务协议</a>
+            <a href="#" class="platform-link">WanQian Platform</a>
+            <button class="theme-toggle">☀️</button>
+        </div>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 左侧导航栏 -->
+        <nav class="sidebar">
+            <div class="nav-section">
+                <div class="nav-section-title">产品介绍</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="WanQiandoc.html" class="nav-link">关于 WanQian</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">产品特性</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">使用指南</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">常见问题</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">新闻动态</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="WanQiannews/wanqianw1exp2.html" class="nav-link">WanQian W1-exp2 更新说明 2026/02/23</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="WanQiannews/wanimaqian3.html" class="nav-link">Wanimaqian 3 更新说明 2026/02/11</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="WanQiannews/wanvideoqian5.html" class="nav-link">Wanvideoqian 5 更新说明 2026/02/11</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="WanQiannews/wanqianw1exp.html" class="nav-link">WanQian W1-exp 正式发布 2026/02/18</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="WanQiannews/wanqian-cora.html" class="nav-link">WanQian-Cora 正式发布 2026/01/01</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="WanQiannews/wanqian7-ultra-thinking.html" class="nav-link">WanQian7 Ultra Thinking 发布 2025/09/01</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="WanQiannews/wanqian7.html" class="nav-link">WanQian7 正式上线 2025/07/21</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="WanQiannews/wanqian-turbo.html" class="nav-link">WanQianTurbo 正式上线 2025/07/05</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="WanQiannews/wanqian6.html" class="nav-link">WanQian6 正式上线 2025/06/28</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 右侧内容区 -->
+        <main class="content">
+            <!-- 面包屑导航 -->
+            <div class="breadcrumb">
+                <a href="WanQiandoc.html" class="breadcrumb-home">🏠</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">服务协议</span>
+            </div>
+
+            <!-- 内容标题 -->
+            <h1 class="content-title">WanQian AI服务协议</h1>
+
+            <!-- 内容文本 -->
+            <p class="content-text">
+                本《WanQian AI服务协议》（以下简称“本协议”）由服务提供方（以下简称“甲方”）与服务使用方（以下简称“乙方”）本着平等自愿、公平诚信、权责对等的原则，依据《中华人民共和国民法典》《生成式人工智能服务管理暂行办法》等相关法律法规，经友好协商达成一致，共同签署并遵守。
+            </p>
+
+            <div class="note">
+                <strong>审慎阅读提示</strong>：乙方在点击“同意”“接受”本协议，或使用甲方提供的WanQian AI服务（以下简称“本服务”）的那一刻起，即视为已充分阅读、理解并完全接受本协议全部条款，包括但不限于免责条款、知识产权条款、限制使用条款等。若乙方不同意本协议任何条款，应立即停止访问和使用本服务。
+            </div>
+
+            <div class="agreement-section">
+                <h2>第一条 定义与解释</h2>
+                <p>1.1 甲方：指WanQian AI服务的运营主体（填写你的姓名/企业名称、统一社会信用代码/身份证号、注册地址/住所地等信息），负责本服务的运营、维护及技术支持，合法调用智谱AI GLM-Z1-Flash API提供服务。</p>
+                <p>1.2 乙方：指自愿注册、登录并使用本服务的自然人、法人或其他组织，应具备完全民事行为能力（自然人）或合法经营资格（法人/其他组织），对自身使用本服务的行为及后果承担全部责任。</p>
+                <p>1.3 本服务：指甲方基于智谱AI GLM-Z1-Flash API技术支持，通过自有网站向乙方提供的人工智能对话、咨询、辅助创作等相关服务（具体服务内容以甲方网站公示为准），服务名称“WanQian”为甲方自定义名称，与智谱AI无官方关联。</p>
+                <p>1.4 智谱AI GLM-Z1-Flash API：指智谱AI官方开放的闭源推理优化模型接口，甲方通过正规渠道申请API密钥，合法调用该接口为乙方提供服务，不涉及模型参数包的下载、部署或修改。</p>
+                <p>1.5 服务数据：指乙方在使用本服务过程中输入的文本、指令、上传的资料（以下简称“输入数据”），以及本服务基于输入数据生成的回复内容、结果文件（以下简称“输出数据”）。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>第二条 服务内容与范围</h2>
+                <p>2.1 甲方基于智谱AI GLM-Z1-Flash API的技术能力，为乙方提供以下核心服务（具体以甲方网站实时公示为准）：</p>
+                <ul>
+                    <li>人工智能对话交互服务：乙方通过甲方网站输入指令，甲方调用GLM-Z1-Flash API生成对应回复，满足乙方咨询、答疑、信息查询等需求；</li>
+                    <li>辅助创作服务：为乙方提供文案、编辑、翻译、代码辅助等基础创作支持（不保证创作内容的独创性、专业性达到乙方特定要求）；</li>
+                </ul>
+                <p>甲方承诺，本服务仅调用智谱AI官方开放的GLM-Z1-Flash API，不下载、部署任何模型参数包，不对模型进行修改、训练或分发，严格遵守智谱AI API使用规范及相关协议要求。</p>
+                
+                <p>2.2 服务限制：</p>
+                <ul>
+                    <li>本服务仅面向乙方个人或合法经营用途，乙方不得将本服务用于商业转售、批量调用、恶意刷量等违规用途；</li>
+                    <li>甲方有权根据智谱AI API的使用限制、自身服务能力，合理限制乙方的单日/单月调用次数、并发量，若乙方需提升使用额度，可与甲方另行协商；</li>
+                    <li>本服务不提供涉及违法违规、敏感领域的服务，包括但不限于政治宣传、色情低俗、封建迷信、违法交易等相关内容的生成或咨询。</li>
+                </ul>
+                
+                <p>2.3 服务变更与终止：甲方有权根据技术升级、政策调整、智谱AI API更新或经营策略变化，变更本服务的内容、形式、使用规则，或暂停、终止部分及全部服务。若发生上述情况，甲方将通过网站公告、站内信等合理方式提前通知乙方，若乙方不同意变更或终止，可停止使用本服务，双方互不承担额外责任（因乙方违规导致的服务终止除外）。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>第三条 服务期限与费用</h2>
+                <p>3.1 服务期限：自乙方完成注册、首次使用本服务之日起，至乙方主动注销账号或甲方终止本服务之日止。若甲方提供付费服务套餐，服务期限以乙方购买的套餐约定为准。</p>
+                
+                <p>3.2 服务费用：</p>
+                <ul>
+                    <li>基础免费服务：甲方提供一定额度的免费调用服务（具体额度以甲方网站公示为准），免费额度耗尽后，乙方可选择购买付费套餐或停止使用；</li>
+                    <li>付费服务：乙方购买付费套餐的，应按照甲方网站公示的价格、支付方式完成付款，付款后即享有对应套餐的服务权益，套餐额度仅限乙方本人使用，不得转让、共享（否则甲方有权终止套餐服务，不予退款）；</li>
+                    <li>费用说明：服务费用仅为甲方提供API调用、服务运营的费用，不包含智谱AI API的直接费用（该费用由甲方统一向智谱AI支付），乙方无需额外向智谱AI支付任何费用；</li>
+                    <li>退款规则：乙方购买付费套餐后，若因甲方原因导致无法正常使用服务，可申请退款，具体退款比例、流程以甲方网站公示为准；若因乙方自身原因（如误购、不再使用等）申请退款，甲方有权根据套餐使用情况扣除相应费用后退款，已使用的服务额度不予退还。</li>
+                </ul>
+            </div>
+
+            <div class="agreement-section">
+                <h2>第四条 双方权利与义务</h2>
+                <h3>4.1 甲方权利与义务</h3>
+                <p><strong>权利：</strong>有权按照本协议约定提供服务、收取服务费用；有权对乙方的使用行为进行监督，对违反本协议、法律法规或智谱AI API使用规范的行为，有权暂停、终止乙方的服务使用权限，追究乙方的违约责任；有权根据自身运营需要，调整服务规则、套餐价格（提前公示）。</p>
+                <p><strong>义务：</strong>严格按照本协议约定提供服务，保障服务的稳定性、可用性（因智谱AI API故障、不可抗力、网络问题等非甲方原因导致的服务中断除外）；合法调用智谱AI GLM-Z1-Flash API，在网站显著位置（如底部、关于页）标注“WanQian基于智谱AI GLM-Z1-Flash API提供服务，非智谱AI官方产品”，履行来源标注义务；对乙方的输入数据、账号信息予以保密（法律法规要求披露、乙方同意披露或因乙方自身原因泄露的除外）；为乙方提供合理的技术支持，及时响应乙方的合理咨询和问题反馈。</p>
+                
+                <h3>4.2 乙方权利与义务</h3>
+                <p><strong>权利：</strong>有权在本协议约定的范围内使用本服务；有权对本服务的质量、体验提出建议；有权在符合退款规则的情况下，申请付费套餐退款。</p>
+                <p><strong>义务：</strong>按照本协议约定、甲方网站规则使用本服务，不得利用本服务从事任何违法违规、损害甲方或第三方合法权益的行为；保证自身输入数据的合法性、真实性，不得输入涉及敏感信息、侵权内容、违法指令的内容；妥善保管自身账号信息，不得转借、出租、出售账号，若因账号泄露导致的损失，由乙方自行承担；不得尝试破解、攻击甲方网站系统，不得非法获取、篡改服务数据或甲方的API密钥；不得宣称WanQian是智谱AI官方产品，不得冒用智谱AI的商标、标识，不得误导公众认为双方存在官方关联；接受甲方的服务监督，对自身使用本服务产生的所有行为及后果（包括但不限于输出内容的使用、传播）承担全部责任。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>第五条 知识产权条款</h2>
+                <p>5.1 智谱AI相关知识产权：GLM-Z1-Flash模型、API接口及相关技术、文档的全部知识产权（包括著作权、商标权、专利权等）均归属智谱AI所有，甲方仅享有合法的API调用权，乙方不得主张对上述知识产权的任何权利，不得实施任何侵犯智谱AI知识产权的行为（包括但不限于下载、破解模型参数包、冒用商标等）。</p>
+                <p>5.2 甲方相关知识产权：WanQian服务名称、甲方网站的设计、代码、运营规则等相关知识产权归属甲方所有，乙方不得擅自使用、复制、修改、传播。</p>
+                <p>5.3 服务数据知识产权：乙方输入的数据，知识产权归属乙方所有（若乙方输入的数据侵犯第三方知识产权，由乙方自行承担全部责任，与甲方无关）；本服务生成的输出数据，知识产权归属甲方与乙方共有，乙方可在合法用途范围内使用输出数据，但不得用于违法违规、侵权用途，若输出数据因智谱AI模型特性或乙方输入指令导致侵权，由乙方自行承担责任。</p>
+                <p>5.4 乙方承诺，其使用本服务生成的内容、输入的数据，不侵犯任何第三方的知识产权、肖像权、名誉权等合法权益，若因此产生纠纷、诉讼，由乙方自行解决并承担全部责任，给甲方、智谱AI或第三方造成损失的，乙方应予以全额赔偿。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>第六条 免责条款</h2>
+                <p>6.1 因不可抗力（包括但不限于地震、洪水、台风等自然灾害，政府政策调整、网络中断、服务器故障等）、智谱AI API故障、升级或限制使用，导致本服务中断、延迟、无法使用的，甲方不承担违约责任，仅需及时通知乙方，并在合理范围内采取补救措施。</p>
+                <p>6.2 本服务基于AI模型自动生成回复，甲方不保证输出内容的准确性、完整性、独创性、适用性，乙方应自行对输出内容进行审核、验证，不得将输出内容作为专业建议（如法律、医疗、金融等领域）使用，若因依赖输出内容产生任何损失，由乙方自行承担。</p>
+                <p>6.3 因乙方自身操作不当、账号泄露、输入违法违规数据，或利用本服务从事违规行为，导致的自身损失或第三方索赔，由乙方自行承担，甲方不承担任何责任，若给甲方造成损失，乙方应予以赔偿。</p>
+                <p>6.4 甲方仅提供API调用及服务运营，不对智谱AI的技术能力、服务质量承担连带责任，若因智谱AI API本身的问题导致服务异常，甲方应及时协调智谱AI处理，但不承担额外赔偿责任。</p>
+                <p>6.5 任何因第三方攻击、篡改、病毒感染等非甲方原因导致的服务异常、数据泄露，甲方不承担责任，若乙方因此遭受损失，可协助乙方追究第三方责任，但不承担赔偿义务。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>第七条 隐私保护</h2>
+                <p>7.1 甲方尊重乙方的隐私，严格按照《中华人民共和国个人信息保护法》等相关法律法规，收集、存储、使用乙方的个人信息（包括账号信息、输入数据等）。</p>
+                <p>7.2 甲方仅为提供本服务的目的，收集乙方必要的个人信息，不收集与服务无关的信息，不擅自向第三方泄露乙方的个人信息（法律法规要求披露、乙方同意披露或为提供服务必需的情况除外）。</p>
+                <p>7.3 乙方有权查询、修改、删除自身的个人信息，若乙方注销账号，甲方将在合理期限内删除乙方的相关信息（法律法规要求留存的除外）。</p>
+                <p>7.4 因乙方自身原因导致账号信息、个人信息泄露的，由乙方自行承担责任，甲方不承担赔偿义务。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>第八条 违约责任</h2>
+                <p>8.1 若甲方未按照本协议约定提供服务，导致乙方无法正常使用服务（非不可抗力、智谱AI API问题导致），应退还乙方未使用的付费套餐费用，若给乙方造成实际损失，应予以合理赔偿（不超过乙方已支付的服务费用）。</p>
+                <p>8.2 若乙方违反本协议约定，存在违规使用服务、侵犯知识产权、输入违法数据、泄露账号等行为，甲方有权暂停、终止乙方的服务使用权限，没收未使用的服务额度，不予退还已支付的费用，若给甲方、智谱AI或第三方造成损失，乙方应予以全额赔偿，甲方有权追究乙方的法律责任。</p>
+                <p>8.3 任何一方违反本协议其他条款，应承担相应的违约责任，赔偿对方因此遭受的合理损失。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>第九条 争议解决</h2>
+                <p>9.1 本协议的订立、履行、解释及争议解决，均适用中华人民共和国法律（不包括冲突法规则）。</p>
+                <p>9.2 双方因本协议产生的任何争议，应首先通过友好协商解决；协商不成的，任何一方均有权向甲方所在地有管辖权的人民法院提起诉讼。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>第十条 其他条款</h2>
+                <p>10.1 本协议未尽事宜，甲方可通过网站公告、补充协议等方式予以补充，补充条款与本协议具有同等法律效力。</p>
+                <p>10.2 本协议的任何条款被认定为无效或不可执行，不影响其他条款的效力，其他条款仍应继续履行。</p>
+                <p>10.3 乙方确认，其在使用本服务前，已充分阅读并理解本协议全部条款，自愿接受本协议的约束，若乙方为法人或其他组织，其签署本协议的代表已获得合法授权。</p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wanimaqian 3 - 智能图像生成</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#10b981',
+                        neutral: '#64748b',
+                        dark: '#0f172a',
+                        light: '#f8fafc'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .math-inline {
+                font-style: italic;
+            }
+            .math-block {
+                font-style: italic;
+                margin: 12px 0;
+                padding: 12px;
+                background: #f8fafc;
+                border-radius: 8px;
+                border-left: 4px solid #3b82f6;
+            }
+            .frac {
+                display: inline-block;
+                vertical-align: middle;
+                margin: 0 0.2em;
+                padding: 0.1em 0.2em;
+            }
+            .frac .top {
+                display: block;
+                text-align: center;
+                border-bottom: 1px solid;
+                padding-bottom: 0.1em;
+            }
+            .frac .bottom {
+                display: block;
+                text-align: center;
+                padding-top: 0.1em;
+            }
+        }
+    </style>
+    <style>
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* 加载动画 */
+        .loading-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin: 0 2px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            animation: loading 1.4s infinite ease-in-out both;
+        }
+        
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        
+        @keyframes loading {
+            0%, 80%, 100% {
+                transform: scale(0);
+            } 40% {
+                transform: scale(1);
+            }
+        }
+        
+        /* 消息气泡样式 */
+        .message {
+            margin: 12px 0;
+            max-width: 85%;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .user-message {
+            margin-left: auto;
+            background: #3b82f6;
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+            padding: 12px 16px;
+        }
+        
+        .ai-message {
+            margin-right: auto;
+            background: #f1f5f9;
+            border-radius: 18px 18px 18px 4px;
+            padding: 12px 16px;
+            position: relative;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                position: fixed;
+                z-index: 50;
+                height: 100vh;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        
+        /* 思考过程折叠样式 */
+        .thinking-container {
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .thinking-header {
+            background: #f8fafc;
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+        }
+        
+        .thinking-content {
+            padding: 12px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+            line-height: 1.5;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .thinking-content.expanded {
+            max-height: 500px;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+        
+        .toggle-icon.collapsed {
+            transform: rotate(90deg);
+        }
+        
+        /* 欢迎消息样式 */
+        .welcome-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 60px 0;
+            color: #64748b;
+        }
+        
+        .welcome-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .welcome-text {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .welcome-subtext {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        /* 图片生成结果样式 */
+        .image-result {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin: 16px 0;
+        }
+        
+        .generated-image {
+            flex: 1 1 200px;
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease;
+        }
+        
+        .generated-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .image-download {
+            display: block;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #3b82f6;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .image-download:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 -->
+        <div class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col">
+            <!-- 移动端菜单按钮 -->
+            <button class="md:hidden p-4 text-gray-600 hover:bg-gray-100" onclick="toggleMobileMenu()">
+                <i class="fa fa-bars"></i>
+            </button>
+            
+            <!-- 头部 -->
+            <div class="p-4 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-primary flex items-center">
+                    <i class="fa fa-picture-o mr-2"></i>
+                    Wanimaqian 3
+                </h1>
+                <p class="text-xs text-gray-500 mt-1">智能图像生成助手</p>
+            </div>
+            
+            <!-- 模型选择 -->
+            <div class="p-4 border-b border-gray-200">
+                <label class="block text-sm font-medium text-gray-700 mb-2">选择模型</label>
+                <select id="model-select" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="cogview-3-flash">Cogview-3-flash</option>
+                </select>
+            </div>
+            
+            <!-- 清空对话按钮 -->
+            <div class="p-4 border-b border-gray-200">
+                <button onclick="clearChat()" class="w-full p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 text-sm flex items-center justify-center">
+                    <i class="fa fa-trash mr-2"></i>
+                    清空对话
+                </button>
+            </div>
+            
+            <!-- 对话历史 -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="p-4">
+                    <h2 class="text-sm font-medium text-gray-700 mb-2">对话历史</h2>
+                    <div class="space-y-2">
+                        <div class="p-3 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors">
+                            <div class="text-sm font-medium text-primary">新对话</div>
+                            <div class="text-xs text-gray-500 mt-1">今天</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 版本更新 -->
+                <div class="p-4 border-t border-gray-200">
+                    <h2 class="text-sm font-medium text-gray-700 mb-2">版本更新</h2>
+                    <div class="space-y-2">
+                        <a href="WanQiandoc.html" class="block p-3 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors" target="_blank">
+                            <div class="text-sm font-medium text-primary">WanQian W1-exp2</div>
+                            <div class="text-xs text-gray-500 mt-1">2026.2.23</div>
+                        </a>
+                        <a href="WanQiandoc.html" class="block p-3 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors" target="_blank">
+                            <div class="text-sm font-medium text-primary">Wanimaqian 3</div>
+                            <div class="text-xs text-gray-500 mt-1">2026.2.11</div>
+                        </a>
+                        <a href="WanQiandoc.html" class="block p-3 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors" target="_blank">
+                            <div class="text-sm font-medium text-primary">Wanvideoqian 5</div>
+                            <div class="text-xs text-gray-500 mt-1">2026.2.11</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="main-content flex-1 flex flex-col">
+            <!-- 聊天标题栏 -->
+            <div class="border-b border-gray-200 bg-white">
+                <div class="flex items-center justify-between p-4">
+                    <h2 class="text-lg font-medium text-gray-900 chat-title">新对话</h2>
+                    <div class="flex space-x-2">
+                        <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-full">
+                            <i class="fa fa-share-alt"></i>
+                        </button>
+                        <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-full">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 聊天记录区域 -->
+            <div id="chat-history" class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <!-- 欢迎消息 -->
+                <div class="welcome-message">
+                    <div class="welcome-icon">🎨</div>
+                    <div class="welcome-text">今天想生成什么图像？</div>
+                    <div class="welcome-subtext">我是Wanimaqian 3，你的智能图像生成助手</div>
+                </div>
+            </div>
+            
+            <!-- 输入区域 -->
+            <div class="border-t border-gray-200 bg-white p-4">
+                <div class="flex items-end space-x-2">
+                    <div class="flex-1">
+                        <textarea 
+                            id="user-input" 
+                            placeholder="请输入图像描述..." 
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                            rows="1"
+                            oninput="autoResizeTextarea()"
+                        ></textarea>
+                    </div>
+                    <button 
+                        onclick="sendMessage()" 
+                        class="bg-primary hover:bg-blue-600 text-white p-3 rounded-lg transition-colors"
+                    >
+                        <i class="fa fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="text-xs text-gray-500 mt-2">
+                    按 Enter 发送消息，Shift + Enter 换行
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="WanQianChatimagine.js"></script>
+</body>
+</html>

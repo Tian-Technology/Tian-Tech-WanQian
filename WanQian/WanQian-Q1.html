@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WanQian-Q1-世界万千问题，我有答案</title>
+    <!-- 添加CryptoJS库用于生成签名 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e6e6fa 0%, #d8bfd8 100%);
+            color: #333333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            flex: 1;
+            display: flex;
+            padding: 25px;
+            margin: 0;
+            margin-top: 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Sidebar Styles */
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            color: #333333;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .model-selector {
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 15px;
+            background: rgba(230, 230, 250, 0.7);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .model-selector label {
+            font-weight: 500;
+            color: #666666;
+            margin-right: 10px;
+        }
+        
+        .model-selector select {
+            padding: 10px 15px;
+            font-size: 15px;
+            border: 2px solid #cccccc;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #333333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .model-selector select:focus {
+            outline: none;
+            border-color: #9370db;
+            box-shadow: 0 2px 10px rgba(147, 112, 219, 0.3);
+        }
+        
+        .chat-container {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: rgba(230, 230, 250, 0.7);
+            border-radius: 12px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            font-size: 16px;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease-in;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            background: linear-gradient(135deg, #9370db 0%, #8a2be2 100%);
+            color: white;
+            margin-left: auto;
+            max-width: 80%;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .ai-message {
+            background: linear-gradient(135deg, #e6e6fa 0%, #d8bfd8 100%);
+            color: #333333;
+            max-width: 80%;
+            border-bottom-left-radius: 5px;
+        }
+        
+        /* 输入框容器 - 固定在底部 */
+        .input-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #e6e6fa;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            margin: 0;
+            border-radius: 12px;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 调整主内容区域的底部边距，为固定输入框留出空间 */
+        .main-content {
+            margin-bottom: 120px; /* 根据输入框高度调整 */
+        }
+        textarea {
+            flex: 1;
+            height: 100px;
+            padding: 15px;
+            border: 2px solid #cccccc;
+            border-radius: 12px;
+            resize: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            color: #333333;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #9370db;
+            box-shadow: 0 2px 10px rgba(147, 112, 219, 0.3);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #9370db 0%, #8a2be2 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(147, 112, 219, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(147, 112, 219, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .loading {
+            color: #cccccc;
+            font-style: italic;
+        }
+        
+        h2 {
+            color: #333333;
+            border-bottom: 2px solid #9370db;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+        
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Main Content -->
+        <div class="main-content">
+
+            
+            <div class="model-selector">
+                <label for="model-select">选择模型：</label>
+                <select id="model-select">
+                    <option value="lite">WanQianQ1 Max</option>
+                    <option value="lite">WanQianQ1 Pro</option>
+                    <option value="lite">WanQianQ1 Beta</option>
+                </select>
+            </div>
+            
+            <div class="chat-container">
+                <h2>对话记录</h2>
+                <div id="chat-history"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="input-container">
+        <textarea id="user-input" placeholder="请输入您要发送给WanQian-Q1的消息..."></textarea>
+        <button onclick="sendMessage()">发送</button>
+    </div>
+
+    <script>
+        // 隐藏的API密钥
+        const API_KEY = "d345c573a3cfa875e0022f40e827c0d3";
+        
+        // 聊天历史记录
+        let chatHistory = [];
+        
+        // 页面加载完成后初始化
+        window.onload = function() {
+            // 初始化空的聊天历史
+            chatHistory = [];
+        };
+        
+        // 发送消息
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // 显示用户消息
+            addMessage('user', message);
+            input.value = '';
+            
+            // 显示加载状态
+            const loadingId = addMessage('ai', 'WanQian-Q1正在思考中...', true);
+            
+            try {
+                // 调用讯飞星火Lite API
+                const response = await callXunfeiAPI(message);
+                
+                // 移除加载状态消息
+                removeMessage(loadingId);
+                
+                // 显示AI回复
+                addMessage('ai', response);
+            } catch (error) {
+                // 移除加载状态消息
+                removeMessage(loadingId);
+                
+                // 显示错误信息
+                addMessage('ai', `错误: ${error.message}`);
+            }
+        }
+        
+        // 调用讯飞星火API
+        async function callXunfeiAPI(message) {
+            return new Promise((resolve, reject) => {
+                // 讯飞星火API配置
+                const appId = "326cef76"; // 真实的APP ID
+                const apiKey = "d345c573a3cfa875e0022f40e827c0d3"; // 真实的API Key
+                const apiSecret = "NmNlZjZkODdhNzYyMzZjNGEyYzc3NjAz"; // 真实的API Secret
+                
+                // 获取用户选择的模型
+                const modelSelect = document.getElementById('model-select');
+                const selectedModel = modelSelect ? modelSelect.value : 'lite';
+                
+                // 根据选择的模型设置domain
+                let domain;
+                switch(selectedModel) {
+                    case 'general':
+                        domain = 'general';
+                        break;
+                    case 'pro':
+                        domain = 'pro';
+                        break;
+                    case 'lite':
+                    default:
+                        domain = 'lite';
+                        break;
+                }
+               
+                // 生成签名
+                function generateSignature() {
+                    const path = '/v1.1/chat';
+                    const gmtTime = new Date().toGMTString();
+                    const signatureOrigin = `host: spark-api.xf-yun.com\ndate: ${gmtTime}\nGET ${path} HTTP/1.1`;
+                    const signatureSha = CryptoJS.HmacSHA256(signatureOrigin, apiSecret);
+                    const signature = CryptoJS.enc.Base64.stringify(signatureSha);
+                    const authorizationOrigin = `api_key="${apiKey}", algorithm="hmac-sha256", headers="host date request-line", signature="${signature}"`;
+                    const authorization = btoa(authorizationOrigin);
+                    return { authorization, date: gmtTime };
+                }
+                
+                // 构建WebSocket URL
+                const { authorization, date } = generateSignature();
+                const url = `wss://spark-api.xf-yun.com/v1.1/chat?authorization=${authorization}&date=${encodeURIComponent(date)}&host=spark-api.xf-yun.com`;
+                
+                // 创建WebSocket连接
+                const ws = new WebSocket(url);
+                
+                let fullResponse = '';
+                let connectionTimeout;
+                
+                // 连接超时处理
+                connectionTimeout = setTimeout(() => {
+                    ws.close();
+                    reject(new Error('连接超时，请检查网络或API配置'));
+                }, 30000);
+                
+                // WebSocket连接打开
+                ws.onopen = function() {
+                    clearTimeout(connectionTimeout);
+                    
+                    // 构建对话历史，包含上下文
+                    const conversationHistory = [];
+                    
+                    // 添加历史消息（排除加载状态的消息）
+                    chatHistory.forEach(msg => {
+                        if (!msg.content.includes('正在思考中')) {
+                            conversationHistory.push({
+                                role: msg.role === 'user' ? 'user' : 'assistant',
+                                content: msg.content
+                            });
+                        }
+                    });
+                    
+                    // 添加当前用户消息
+                    conversationHistory.push({
+                        role: "user",
+                        content: message
+                    });
+                    
+                    // 限制对话历史长度，避免token过多
+                    const maxHistoryLength = 10; // 最多保留最近的5轮对话
+                    const trimmedHistory = conversationHistory.slice(-maxHistoryLength);
+                    
+                    // 发送消息
+                    const payload = {
+                        header: {
+                            app_id: appId,
+                            uid: "user_001"
+                        },
+                        parameter: {
+                            chat: {
+                                domain: domain, // 使用用户选择的模型
+                                temperature: 0.7,
+                                max_tokens: 2048
+                            }
+                        },
+                        payload: {
+                            message: {
+                                text: trimmedHistory
+                            }
+                        }
+                    };
+                    
+                    ws.send(JSON.stringify(payload));
+                };
+                
+                // 接收消息
+                ws.onmessage = function(event) {
+                    try {
+                        const response = JSON.parse(event.data);
+                        
+                        if (response.header.code !== 0) {
+                            ws.close();
+                            let errorMsg = `API错误: ${response.header.message}`;
+                            if (response.header.code === 10003 || response.header.message.includes('AppIdNoAuthError')) {
+                                errorMsg += '\n\n请按以下步骤获取正确的认证信息：\n1. 访问讯飞星火官网: https://xinghuo.xfyun.cn/desk\n2. 注册/登录账号\n3. 点击"API接入"\n4. 创建应用并获取APPID、APIKey和APISecret\n5. 将代码中的appId、apiKey和apiSecret替换为真实值';
+                            }
+                            reject(new Error(errorMsg));
+                            return;
+                        }
+                        
+                        if (response.payload && response.payload.choices && response.payload.choices.text) {
+                            const textContent = response.payload.choices.text[0].content;
+                            fullResponse += textContent;
+                        }
+                        
+                        // 检查是否是最后一条消息
+                        if (response.header.status === 2) {
+                            ws.close();
+                            resolve(fullResponse);
+                        }
+                    } catch (error) {
+                        console.error('解析响应错误:', error);
+                    }
+                };
+                
+                // 错误处理
+                ws.onerror = function(error) {
+                    clearTimeout(connectionTimeout);
+                    let errorMessage = 'WebSocket连接错误';
+                    if (error && error.message) {
+                        errorMessage += ': ' + error.message;
+                    } else if (error && typeof error === 'string') {
+                        errorMessage += ': ' + error;
+                    } else if (error && error.type) {
+                        errorMessage += ': ' + error.type;
+                    }
+                    reject(new Error(errorMessage));
+                };
+                
+                // 连接关闭
+                ws.onclose = function() {
+                    clearTimeout(connectionTimeout);
+                    if (fullResponse) {
+                        resolve(fullResponse);
+                    } else {
+                        reject(new Error('连接已关闭，未收到完整响应'));
+                    }
+                };
+            });
+        }
+        
+        // 添加消息到聊天显示区域
+        function addMessage(role, content, isLoading = false) {
+            const chatHistoryElement = document.getElementById('chat-history');
+            const messageElement = document.createElement('div');
+            
+            // 生成唯一ID用于标识消息
+            const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            messageElement.id = messageId;
+            
+            messageElement.classList.add('message');
+            if (role === 'user') {
+                messageElement.classList.add('user-message');
+            } else {
+                messageElement.classList.add('ai-message');
+            }
+            
+            if (isLoading) {
+                messageElement.classList.add('loading');
+            }
+            
+            messageElement.textContent = content;
+            chatHistoryElement.appendChild(messageElement);
+            
+            // 滚动到最新消息
+            chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
+            
+            // 添加到聊天历史记录
+            chatHistory.push({
+                id: messageId,
+                role: role,
+                content: content,
+                timestamp: new Date()
+            });
+            
+            return messageId;
+        }
+        
+        // 移除指定ID的消息
+        function removeMessage(messageId) {
+            const messageElement = document.getElementById(messageId);
+            if (messageElement) {
+                messageElement.remove();
+                
+                // 从聊天历史记录中移除
+                chatHistory = chatHistory.filter(msg => msg.id !== messageId);
+            }
+        }
+        
+        
+        // 处理用户按Enter键发送消息（Shift+Enter换行）
+        document.getElementById('user-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>

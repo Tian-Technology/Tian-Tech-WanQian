@@ -1,0 +1,162 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    background: #ffffff;
+    color: #333333;
+    min-height: 100vh;
+}
+
+/* 顶部导航栏 */
+.header {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo::before {
+    content: "⚡";
+    font-size: 20px;
+}
+
+.header-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* 主容器 */
+.main-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+/* 内容标题 */
+.content-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 16px;
+}
+
+/* 更新时间 */
+.update-time {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 32px;
+}
+
+/* 内容段落 */
+.content-text {
+    font-size: 15px;
+    color: #4b5563;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+/* 特性列表 */
+.feature-list {
+    margin-left: 24px;
+    margin-bottom: 24px;
+}
+
+.feature-list li {
+    margin-bottom: 12px;
+    color: #4b5563;
+}
+
+/* 强调文本 */
+.highlight {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* 返回链接 */
+.back-link {
+    display: inline-block;
+    margin-top: 40px;
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* 章节标题 */
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 16px;
+    margin-top: 32px;
+}
+
+/* 表格 */
+.api-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.api-table th,
+.api-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border: 1px solid #e5e7eb;
+}
+
+.api-table th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.api-table td {
+    color: #4b5563;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 24px 16px;
+    }
+    
+    .content-title {
+        font-size: 24px;
+    }
+}
