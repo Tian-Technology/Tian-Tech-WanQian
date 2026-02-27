@@ -27,6 +27,9 @@ WanQian 系列模型具有以下核心特性：
 
 ## 📰 新闻动态
 
+### 2026年2月27日 - WanQian W1-exp2 更新说明
+WanQian W1正式版 正式发布！基于最新的 GLM-Z1-Flash 模型，强化了推理能力，拥有自然流畅的对话体验，拥有高效响应速度，体验更流畅，为用户提供高强度的模型推理思考服务。
+
 ### 2026年2月23日 - WanQian W1-exp2 更新说明
 WanQian W1-exp2 正式发布！基于最新的 GLM-Z1-Flash 模型，提升了上下文理解能力、推理逻辑、响应速度和知识覆盖，为用户提供更加专业、高效的智能助手服务。
 
@@ -55,8 +58,8 @@ Wanvideoqian 5 正式发布！基于最新的 Cogvideox-Flash 模型，提升了
 开发者推出首款 WanQian 系列 AI 助手 WanQian6，该助手基于智谱 AI ChatGLM 大模型 API，为用户提供基础的智能对话能力，开启了 WanQian 系列的新篇章。
 
 ## 📞 联系与相关链接
-- 服务协议：[servicenotice.html](servicenotice.html)
-- WanQian Platform：[访问平台](https://github.com/your-username/wanqian)
+- 服务协议：[服务协议](http://tiantech.zjjsw.com/WanQian/servicenotice.html)
+- WanQian Platform：[访问平台](https://github.com/Tian-Technology/Tian-Tech-WanQian)
 
 ---
 
